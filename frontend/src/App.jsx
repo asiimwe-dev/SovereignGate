@@ -8,7 +8,6 @@ import { Building2, Activity } from 'lucide-react';
 
 const AppContent = () => {
   const system = useSystem();
-  const [selectedBatch, setSelectedBatch] = useState(null);
   
   if (!system) {
     return (
@@ -18,7 +17,7 @@ const AppContent = () => {
     );
   }
 
-  const { isCompromised, batch } = system;
+  const { isCompromised, batch, selectedBatch, setSelectedBatch } = system;
 
   return (
     <div className="min-h-screen relative flex flex-col md:flex-row transition-all duration-700 bg-[#0d1117]">

@@ -12,20 +12,23 @@ import {
 } from 'lucide-react';
 
 const CommandConsole = () => {
-  const { batch, loading, sharesSubmitted, setSharesSubmitted } = useSystem();
+  const { batch, selectedBatch, loading, sharesSubmitted, setSharesSubmitted } = useSystem();
   const { submitShare } = useApi();
   const [submitting, setSubmitting] = useState(null);
   const [executing, setExecuting] = useState(false);
   const [executionMessage, setExecutionMessage] = useState('');
   const [backendSharesCount, setBackendSharesCount] = useState(0);
 
+  // Use selectedBatch if available, otherwise use default batch
+  const currentBatch = selectedBatch || batch;
+
   // Reset shares when batch ID changes
   React.useEffect(() => {
-    if (batch?.batch_id) {
+    if (currentBatch?.batch_id) {
       setSharesSubmitted([]);
       setBackendSharesCount(0);
     }
-  }, [batch?.batch_id, setSharesSubmitted]);
+  }, [currentBatch?.batch_id, setSharesSubmitted]);
 
   const authorityNodes = [
     { 
@@ -62,7 +65,7 @@ const CommandConsole = () => {
   const handleSign = async (admin) => {
     setSubmitting(admin.id);
     try {
-      const response = await submitShare(batch.batch_id, admin.id, adminShares[admin.id], `HW-TOKEN-${admin.id}-${Date.now()}`);
+      const response = await submitShare(currentBatch.batch_id, admin.id, adminShares[admin.id], `HW-TOKEN-${admin.id}-${Date.now()}`);
       console.log('Share submitted:', response);
       
       // Use the backend's shares_count response (SINGLE SOURCE OF TRUTH)
@@ -96,7 +99,7 @@ const CommandConsole = () => {
     setExecuting(true);
     try {
       // Call the new execute-settlement endpoint
-      const response = await fetch(`http://localhost:8000/api/v1/mpc/execute-settlement?batch_id=${batch.batch_id}`, {
+      const response = await fetch(`http://localhost:8000/api/v1/mpc/execute-settlement?batch_id=${currentBatch.batch_id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       });
@@ -128,7 +131,7 @@ const CommandConsole = () => {
     }
   };
 
-  if (loading || !batch) {
+  if (loading || !currentBatch) {
     return (
       <div className="flex flex-col items-center justify-center h-[60vh]">
         <div className="animate-institutional-pulse">
@@ -143,7 +146,7 @@ const CommandConsole = () => {
     );
   }
 
-  const isSettled = batch.status === 'SETTLED';
+  const isSettled = currentBatch.status === 'SETTLED';
   const signatureCount = backendSharesCount;  // Use backend's shares_count (source of truth)
   const thresholdReady = signatureCount >= 2;
 
@@ -153,20 +156,20 @@ const CommandConsole = () => {
       <section className="institutional-card p-8">
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8 pb-6 border-b border-[#30363d]">
           <div>
-            <h2 className="institutional-header text-2xl font-black mb-2">{batch.funding_vote}</h2>
-            <p className="data-mono text-xs text-slate-400 uppercase tracking-wider">{batch.batch_id}</p>
+            <h2 className="institutional-header text-2xl font-black mb-2">{currentBatch.funding_vote}</h2>
+            <p className="data-mono text-xs text-slate-400 uppercase tracking-wider">{currentBatch.batch_id}</p>
           </div>
-          <StatusBadge status={batch.status} />
+          <StatusBadge status={currentBatch.status} />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="institutional-card p-5 bg-[#0d1117]">
             <p className="text-[11px] text-slate-500 uppercase font-black mb-2 tracking-widest">Source Account</p>
-            <p className="data-mono text-sm text-slate-300 font-bold">{batch.source_account}</p>
+            <p className="data-mono text-sm text-slate-300 font-bold">{currentBatch.source_account}</p>
           </div>
           <div className="institutional-card p-5 bg-[#0d1117]">
             <p className="text-[11px] text-slate-500 uppercase font-black mb-2 tracking-widest">Authorized Payee</p>
-            <p className="text-sm font-black text-slate-100 uppercase">{batch.payload.recipient}</p>
+            <p className="text-sm font-black text-slate-100 uppercase">{currentBatch.payload.recipient}</p>
           </div>
           <div className="institutional-card p-5 bg-[#0d1117] md:col-span-2 lg:col-span-2">
             <p className="text-[11px] text-[#C5A059] uppercase font-black mb-2 tracking-widest flex items-center gap-2">
@@ -174,7 +177,7 @@ const CommandConsole = () => {
             </p>
             <div className="flex items-baseline gap-2">
               <p className="text-3xl font-black text-[#C5A059] data-mono">
-                {batch.payload.amount.toLocaleString()}
+                {currentBatch.payload.amount.toLocaleString()}
               </p>
               <span className="text-xs font-black text-slate-400 uppercase tracking-widest">UGX</span>
             </div>
@@ -232,7 +235,7 @@ const CommandConsole = () => {
                         type="password"
                         value={adminShares[admin.id]}
                         onChange={(e) => handleShareChange(admin.id, e.target.value)}
-                        disabled={isSigned || batch.status === 'SETTLED' || batch.status === 'CRITICAL_COMPROMISE'}
+                        disabled={isSigned || currentBatch.status === 'SETTLED' || currentBatch.status === 'CRITICAL_COMPROMISE'}
                         className="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-4 py-3 text-sm font-mono text-slate-300 focus:outline-none focus:border-[#C5A059]/50 disabled:opacity-50 disabled:bg-slate-950/50 transition-colors"
                         placeholder="••••••••••••••••"
                       />
@@ -247,7 +250,7 @@ const CommandConsole = () => {
                   {/* Commit Button */}
                   <button
                     onClick={() => handleSign(admin)}
-                    disabled={isProcessing || isSigned || batch.status === 'SETTLED' || batch.status === 'CRITICAL_COMPROMISE'}
+                    disabled={isProcessing || isSigned || currentBatch.status === 'SETTLED' || currentBatch.status === 'CRITICAL_COMPROMISE'}
                     className={`w-full py-3 rounded-lg font-black text-sm uppercase tracking-[0.15em] flex items-center justify-center gap-2 transition-all active:scale-95 ${
                       isSigned 
                         ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 cursor-not-allowed' 
@@ -303,9 +306,9 @@ const CommandConsole = () => {
         {/* Execute Clearing Button */}
         <button
           onClick={handleExecuteClearing}
-          disabled={isSettled || batch.status === 'CRITICAL_COMPROMISE' || !thresholdReady || executing}
+          disabled={isSettled || currentBatch.status === 'CRITICAL_COMPROMISE' || !thresholdReady || executing}
           className={`w-full py-4 rounded-lg font-black text-base uppercase tracking-[0.15em] transition-all active:scale-[0.98] ${
-            isSettled || batch.status === 'CRITICAL_COMPROMISE' || !thresholdReady || executing
+            isSettled || currentBatch.status === 'CRITICAL_COMPROMISE' || !thresholdReady || executing
               ? 'bg-slate-900 text-slate-500 cursor-not-allowed border border-slate-800'
               : 'bg-[#C5A059] text-black border border-[#C5A059] hover:bg-[#D4B873] shadow-lg hover:shadow-[0_0_20px_rgba(197,160,89,0.3)]'
           }`}
@@ -340,7 +343,7 @@ const CommandConsole = () => {
                 {signatureCount}-of-3 Quorum Verified. Funds disbursed successfully via RTGS network.
               </p>
               <p className="data-mono text-xs text-emerald-400 bg-black/30 p-3 rounded border border-emerald-500/20 break-all">
-                {batch.combined_signature || "AUTHENTICATION_HASH_LEDGER_CONFIRMATION"}
+                {currentBatch.combined_signature || "AUTHENTICATION_HASH_LEDGER_CONFIRMATION"}
               </p>
             </div>
           </div>

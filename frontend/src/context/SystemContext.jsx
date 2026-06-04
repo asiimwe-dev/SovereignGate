@@ -5,6 +5,7 @@ const SystemContext = createContext();
 
 export const SystemProvider = ({ children }) => {
   const [batch, setBatch] = useState(null);
+  const [selectedBatch, setSelectedBatch] = useState(null);
   const [sharesSubmitted, setSharesSubmitted] = useState([]); 
   const [isCompromised, setIsCompromised] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -37,7 +38,9 @@ export const SystemProvider = ({ children }) => {
   }, []);
 
   const value = { 
-    batch, 
+    batch,
+    selectedBatch,
+    setSelectedBatch,
     sharesSubmitted, 
     setSharesSubmitted, 
     isCompromised, 
