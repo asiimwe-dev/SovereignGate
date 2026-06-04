@@ -4,4 +4,3 @@ pycryptodome
 pydantic
 python-dotenv
 ecdsa
-hashlib
