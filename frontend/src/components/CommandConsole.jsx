@@ -17,11 +17,13 @@ const CommandConsole = () => {
   const [submitting, setSubmitting] = useState(null);
   const [executing, setExecuting] = useState(false);
   const [executionMessage, setExecutionMessage] = useState('');
+  const [backendSharesCount, setBackendSharesCount] = useState(0);
 
   // Reset shares when batch ID changes
   React.useEffect(() => {
     if (batch?.batch_id) {
       setSharesSubmitted([]);
+      setBackendSharesCount(0);
     }
   }, [batch?.batch_id, setSharesSubmitted]);
 
@@ -62,7 +64,13 @@ const CommandConsole = () => {
     try {
       const response = await submitShare(batch.batch_id, admin.id, adminShares[admin.id], `HW-TOKEN-${admin.id}-${Date.now()}`);
       console.log('Share submitted:', response);
-      // Track which node was signed from the response
+      
+      // Use the backend's shares_count response (SINGLE SOURCE OF TRUTH)
+      if (response.shares_count !== undefined) {
+        setBackendSharesCount(response.shares_count);
+      }
+      
+      // Track which nodes were signed from the response
       if (!sharesSubmitted.includes(admin.id)) {
         setSharesSubmitted(prev => [...prev, admin.id]);
       }
@@ -76,7 +84,8 @@ const CommandConsole = () => {
   };
 
   const handleExecuteClearing = async () => {
-    const signatureCount = sharesSubmitted.length;
+    // Use backend shares count (source of truth)
+    const signatureCount = backendSharesCount;
     
     if (signatureCount < 2) {
       setExecutionMessage(`INSUFFICIENT THRESHOLD: ${signatureCount} of 2 required signatures present. Core ledger remains locked.`);
@@ -131,7 +140,7 @@ const CommandConsole = () => {
   }
 
   const isSettled = batch.status === 'SETTLED';
-  const signatureCount = sharesSubmitted.length;
+  const signatureCount = backendSharesCount;  // Use backend's shares_count (source of truth)
   const thresholdReady = signatureCount >= 2;
 
   return (

@@ -13,8 +13,8 @@ export const useApi = () => {
         hardware_token: hardwareToken
       });
       
-      // Update the signed list
-      setSharesSubmitted(prev => [...new Set([...prev, adminId])]);
+      // NOTE: Do NOT update sharesSubmitted here - CommandConsole handles it
+      // Backend returns shares_count which is the source of truth
       
       await fetchStatus();
       return response.data;
