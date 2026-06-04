@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { SystemProvider, useSystem } from './context/SystemContext';
 import CommandConsole from './components/CommandConsole';
 import HeistControl from './components/HeistControl';
+import BatchSelector from './components/BatchSelector';
 import AlertModal from './components/Shared/AlertModal';
 import { Building2, Activity } from 'lucide-react';
 
 const AppContent = () => {
   const system = useSystem();
+  const [selectedBatch, setSelectedBatch] = useState(null);
   
   if (!system) {
     return (
@@ -16,7 +18,7 @@ const AppContent = () => {
     );
   }
 
-  const { isCompromised } = system;
+  const { isCompromised, batch } = system;
 
   return (
     <div className="min-h-screen relative flex flex-col md:flex-row transition-all duration-700 bg-[#0d1117]">
@@ -65,7 +67,14 @@ const AppContent = () => {
           </div>
         </header>
         
-        <div className="max-w-5xl">
+        <div className="max-w-5xl space-y-8">
+          {/* Batch Selector */}
+          <BatchSelector 
+            currentBatch={selectedBatch || batch}
+            onBatchSelect={setSelectedBatch}
+          />
+          
+          {/* Command Console */}
           <CommandConsole />
         </div>
       </main>

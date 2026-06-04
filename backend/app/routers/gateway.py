@@ -10,7 +10,37 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/gate", tags=["gate"])
 
-@router.get("/batch", response_model=PaymentBatchResponse)
+@router.get("/batches")
+async def list_all_batches():
+    """
+    Retrieve all available payment batches from the database.
+    Allows users to select which batch to dispatch.
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT batch_id, funding_vote, source_account, payload_json, status FROM payment_batches ORDER BY batch_id DESC")
+    rows = cursor.fetchall()
+    conn.close()
+
+    batches = []
+    for row in rows:
+        row_dict = dict(row)
+        try:
+            payload = json.loads(row_dict["payload_json"])
+            batches.append({
+                "batch_id": row_dict["batch_id"],
+                "funding_vote": row_dict["funding_vote"],
+                "source_account": row_dict["source_account"],
+                "payload": payload,
+                "status": row_dict["status"]
+            })
+        except json.JSONDecodeError:
+            logger.warning(f"Failed to parse payload for batch {row_dict['batch_id']}")
+            continue
+
+    return {"batches": batches}
+
+
 async def get_current_batch():
     """
     Retrieve current payment batch with MANDATORY integrity verification.
