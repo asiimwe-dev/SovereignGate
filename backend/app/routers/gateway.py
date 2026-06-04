@@ -41,6 +41,7 @@ async def list_all_batches():
     return {"batches": batches}
 
 
+@router.get("/batch")
 async def get_current_batch():
     """
     Retrieve current payment batch with MANDATORY integrity verification.
