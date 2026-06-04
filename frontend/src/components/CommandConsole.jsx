@@ -114,6 +114,10 @@ const CommandConsole = () => {
         setExecutionMessage(`SETTLED / MAXIMUM QUORUM SECURED: 3-of-3 Authorization Confirmed.`);
       }
       
+      // Reset share counts after successful execution
+      setBackendSharesCount(0);
+      setSharesSubmitted([]);
+      
       setTimeout(() => setExecutionMessage(''), 5000);
     } catch (err) {
       console.error('Execution error:', err);
