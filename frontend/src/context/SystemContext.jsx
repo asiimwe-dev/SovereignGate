@@ -16,8 +16,12 @@ export const SystemProvider = ({ children }) => {
       console.log("SovereignGate: Polling API...");
       const response = await axios.get(`${API_BASE}/gate/batch`);
       setBatch(response.data);
+      
+      // Update compromise state based on current batch status
       if (response.data.status === 'CRITICAL_COMPROMISE') {
         setIsCompromised(true);
+      } else {
+        setIsCompromised(false);
       }
     } catch (error) {
       console.warn("SovereignGate: API unreachable. Check if backend is running at :8000");
