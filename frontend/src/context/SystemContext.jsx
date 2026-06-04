@@ -5,7 +5,7 @@ const SystemContext = createContext();
 
 export const SystemProvider = ({ children }) => {
   const [batch, setBatch] = useState(null);
-  const [sharesSubmitted, setSharesSubmitted] = useState([]);
+  const [sharesSubmitted, setSharesSubmitted] = useState([]); // Array of admin IDs who have signed
   const [isCompromised, setIsCompromised] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -15,6 +15,12 @@ export const SystemProvider = ({ children }) => {
     try {
       const response = await axios.get(`${API_BASE}/gate/batch`);
       setBatch(response.data);
+      
+      // If the batch was settled, we might want to clear local sign state 
+      // but for the demo, we keep it or rely on the backend.
+      // Since backend doesn't return WHO signed yet, we manage it locally 
+      // via the submitShare hook in useApi.
+      
       if (response.data.status === 'CRITICAL_COMPROMISE') {
         setIsCompromised(true);
       }

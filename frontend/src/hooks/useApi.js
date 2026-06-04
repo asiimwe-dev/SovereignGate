@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useSystem } from '../context/SystemContext';
 
 export const useApi = () => {
-  const { API_BASE, fetchStatus } = useSystem();
+  const { API_BASE, fetchStatus, setSharesSubmitted } = useSystem();
 
   const submitShare = async (batchId, adminId, shareValue, hardwareToken) => {
     try {
@@ -12,6 +12,10 @@ export const useApi = () => {
         share_value: shareValue,
         hardware_token: hardwareToken
       });
+      
+      // Update the signed list
+      setSharesSubmitted(prev => [...new Set([...prev, adminId])]);
+      
       await fetchStatus();
       return response.data;
     } catch (error) {
