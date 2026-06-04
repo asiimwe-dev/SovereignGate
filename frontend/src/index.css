@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-slate-900 text-slate-100 font-sans;
+  margin: 0;
+}
+
+.crimson-lockout {
+  @apply fixed inset-0 z-[9999] bg-red-900 flex flex-col items-center justify-center text-white;
+}
