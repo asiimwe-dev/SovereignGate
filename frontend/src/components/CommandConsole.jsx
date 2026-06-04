@@ -3,37 +3,46 @@ import { useSystem } from '../context/SystemContext';
 import { useApi } from '../hooks/useApi';
 import StatusBadge from './Shared/StatusBadge';
 import { 
-  ShieldCheck, 
+  LockKeyhole, 
   UserCheck, 
-  Key, 
-  RefreshCw, 
-  Landmark, 
-  Cpu, 
-  Hash, 
-  ExternalLink, 
-  HardDrive, 
   CheckCircle2,
-  Fingerprint,
-  Radio,
-  ChevronRight,
-  FileCheck,
-  Shield
+  AlertCircle,
+  TrendingUp,
+  DollarSign
 } from 'lucide-react';
-import MPCVisualizer from './MPCVisualizer';
 
 const CommandConsole = () => {
-  const { batch, loading, sharesSubmitted } = useSystem();
+  const { batch, loading, sharesSubmitted, setSharesSubmitted } = useSystem();
   const { submitShare } = useApi();
   const [submitting, setSubmitting] = useState(null);
+  const [executionMessage, setExecutionMessage] = useState('');
 
-  const initialAdmins = [
-    { id: 1, role: "Accountant General", name: "L. Okello", share: "7f3e1a2b5c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f" },
-    { id: 2, role: "Comm. Treasury Services", name: "J. Musoke", share: "1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b" },
-    { id: 3, role: "BOU Compliance Auditor", name: "S. Asiimwe", share: "f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0" }
+  const authorityNodes = [
+    { 
+      id: 1, 
+      role: "Accountant General", 
+      title: "Treasury Authority",
+      name: "L. Okello", 
+      share: "7f3e1a2b5c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f" 
+    },
+    { 
+      id: 2, 
+      role: "Commissioner of Treasury Services", 
+      title: "MoFPED Authority",
+      name: "J. Musoke", 
+      share: "1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b" 
+    },
+    { 
+      id: 3, 
+      role: "Executive Auditor", 
+      title: "BoU Compliance",
+      name: "S. Asiimwe", 
+      share: "f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0" 
+    }
   ];
 
   const [adminShares, setAdminShares] = useState(
-    initialAdmins.reduce((acc, curr) => ({ ...acc, [curr.id]: curr.share }), {})
+    authorityNodes.reduce((acc, curr) => ({ ...acc, [curr.id]: curr.share }), {})
   );
 
   const handleShareChange = (id, value) => {
@@ -44,174 +53,238 @@ const CommandConsole = () => {
     setSubmitting(admin.id);
     try {
       await submitShare(batch.batch_id, admin.id, adminShares[admin.id], `HW-TOKEN-${admin.id}-${Date.now()}`);
+      setSharesSubmitted(prev => [...prev, admin.id]);
     } catch (err) {
       console.error(err);
-      alert(err);
     } finally {
       setSubmitting(null);
     }
   };
 
+  const handleExecuteClearing = async () => {
+    const signatureCount = sharesSubmitted.length;
+    
+    if (signatureCount < 2) {
+      setExecutionMessage(`INSUFFICIENT THRESHOLD: ${signatureCount} of 2 required signatures present. Core ledger remains locked.`);
+      setTimeout(() => setExecutionMessage(''), 4000);
+      return;
+    }
+
+    if (signatureCount === 2) {
+      setExecutionMessage(`SETTLED / CLEARED: 2-of-3 Quorum Verified. Funds Disbursed Successfully via RTGS.`);
+    } else if (signatureCount === 3) {
+      setExecutionMessage(`SETTLED / MAXIMUM QUORUM SECURED: 3-of-3 Authorization Confirmed.`);
+    }
+    
+    setTimeout(() => setExecutionMessage(''), 5000);
+  };
+
   if (loading || !batch) {
     return (
       <div className="flex flex-col items-center justify-center h-[60vh]">
-        <RefreshCw className="animate-spin text-sky-500" size={56} />
-        <p className="mt-6 font-mono text-sm text-sky-500 uppercase tracking-widest animate-pulse font-bold">
-          Synchronizing Security Core...
+        <div className="animate-institutional-pulse">
+          <div className="w-12 h-12 rounded-lg bg-[#161b22] border border-[#C5A059]/30 flex items-center justify-center mb-6">
+            <TrendingUp className="text-[#C5A059]" size={24} />
+          </div>
+        </div>
+        <p className="mt-6 font-mono text-sm text-slate-400 uppercase tracking-widest font-bold">
+          Synchronizing Authorization Layer...
         </p>
       </div>
     );
   }
 
   const isSettled = batch.status === 'SETTLED';
+  const signatureCount = sharesSubmitted.length;
 
   return (
-    <div className="space-y-10 py-6">
-      {/* SUCCESS VISUALIZATION OVERLAY */}
-      {isSettled && (
-        <div className="relative overflow-hidden rounded-3xl bg-emerald-950/20 border-2 border-emerald-500 shadow-[0_0_50px_rgba(16,185,129,0.2)] animate-in fade-in zoom-in-95 duration-1000">
-           <div className="absolute top-0 left-0 w-full h-1.5 bg-emerald-500"></div>
-           <div className="p-8 md:p-10 flex flex-col md:flex-row items-center gap-8">
-              <div className="relative">
-                 <div className="absolute inset-0 bg-emerald-500 rounded-full blur-2xl opacity-20 animate-pulse"></div>
-                 <div className="relative p-6 bg-emerald-500/10 rounded-full border-4 border-emerald-500">
-                    <FileCheck className="text-emerald-400" size={64} />
-                 </div>
-              </div>
-              <div className="flex-grow space-y-4 text-center md:text-left">
-                 <div>
-                    <h2 className="text-3xl font-black text-white uppercase tracking-tight">Transaction Authenticated</h2>
-                    <p className="text-emerald-400 font-bold tracking-widest uppercase text-sm mt-1">2-of-3 Quorum Verified // Payout Finalized</p>
-                 </div>
-                 <div className="bg-black/40 border border-emerald-500/30 p-5 rounded-2xl">
-                    <p className="text-[10px] font-mono text-emerald-900 uppercase font-black tracking-widest mb-2 flex items-center gap-2">
-                       <Shield size={12} /> Digital Signature (ECDSA-SECP256K1)
-                    </p>
-                    <code className="text-xs font-mono text-emerald-500/80 break-all leading-relaxed block bg-black/20 p-3 rounded-lg border border-emerald-900/20">
-                       {batch.combined_signature || "AUTHENTICATION_HASH_PENDING_RELAY"}
-                    </code>
-                 </div>
-              </div>
-              <div className="shrink-0 flex flex-col items-center gap-3">
-                 <div className="h-12 w-12 rounded-full border-4 border-emerald-500 flex items-center justify-center">
-                    <CheckCircle2 className="text-emerald-500" size={28} />
-                 </div>
-                 <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Settled</span>
-              </div>
-           </div>
-        </div>
-      )}
-
-      {/* Ledger Card */}
-      <section className={`relative overflow-hidden rounded-3xl bg-slate-900/40 backdrop-blur-xl border border-slate-800 shadow-2xl transition-opacity duration-1000 ${isSettled ? 'opacity-40 grayscale-[0.5]' : ''}`}>
-        <div className="p-8 md:p-10">
-          <div className="flex flex-col lg:flex-row justify-between items-start gap-8">
-            <div className="flex items-center gap-6">
-              <div className="p-4 bg-slate-950 rounded-2xl border border-slate-800">
-                <Landmark className="text-sky-400" size={40} />
-              </div>
-              <div>
-                <h2 className="text-2xl font-black text-white uppercase tracking-tight">{batch.funding_vote}</h2>
-                <p className="text-xs font-mono text-slate-500 uppercase mt-1 tracking-widest">{batch.batch_id}</p>
-              </div>
-            </div>
-            <StatusBadge status={batch.status} />
+    <div className="space-y-8">
+      {/* LEDGER INFORMATION CARD */}
+      <section className="institutional-card p-8">
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8 pb-6 border-b border-[#30363d]">
+          <div>
+            <h2 className="institutional-header text-xl mb-1">{batch.funding_vote}</h2>
+            <p className="data-mono text-xs text-slate-400 uppercase tracking-wider">{batch.batch_id}</p>
           </div>
+          <StatusBadge status={batch.status} />
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
-            <div className="p-5 rounded-2xl bg-slate-950/50 border border-slate-800 flex flex-col justify-center">
-              <p className="text-[11px] text-slate-500 uppercase font-black mb-2 tracking-widest">Source account</p>
-              <p className="font-mono text-sm text-sky-400 font-bold">{batch.source_account}</p>
-            </div>
-            <div className="p-5 rounded-2xl bg-slate-950/50 border border-slate-800 flex flex-col justify-center">
-              <p className="text-[11px] text-slate-500 uppercase font-black mb-2 tracking-widest">Authorized payee</p>
-              <p className="text-sm font-black text-slate-200 uppercase">{batch.payload.recipient}</p>
-            </div>
-            <div className="p-5 rounded-2xl bg-emerald-500/[0.04] border border-emerald-500/20 md:col-span-2 flex flex-col justify-center shadow-[inset_0_0_30px_rgba(16,185,129,0.03)]">
-              <p className="text-[11px] text-emerald-500 uppercase font-black mb-2 tracking-widest">Authorized Disbursement Total</p>
-              <div className="flex items-baseline gap-3">
-                <p className="text-4xl font-black text-emerald-400 font-mono tracking-tighter">
-                  {batch.payload.amount.toLocaleString()}
-                </p>
-                <span className="text-sm font-black text-emerald-500/50 uppercase tracking-widest">UGX</span>
-              </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="institutional-card p-5 bg-[#0d1117]">
+            <p className="text-[10px] text-slate-500 uppercase font-black mb-2 tracking-widest">Source Account</p>
+            <p className="data-mono text-sm text-slate-300 font-bold">{batch.source_account}</p>
+          </div>
+          <div className="institutional-card p-5 bg-[#0d1117]">
+            <p className="text-[10px] text-slate-500 uppercase font-black mb-2 tracking-widest">Authorized Payee</p>
+            <p className="text-sm font-black text-slate-100 uppercase">{batch.payload.recipient}</p>
+          </div>
+          <div className="institutional-card p-5 bg-[#0d1117] md:col-span-2 lg:col-span-2">
+            <p className="text-[10px] text-[#C5A059] uppercase font-black mb-2 tracking-widest flex items-center gap-2">
+              <DollarSign size={12} /> Authorized Disbursement
+            </p>
+            <div className="flex items-baseline gap-2">
+              <p className="text-3xl font-black text-[#C5A059] data-mono">
+                {batch.payload.amount.toLocaleString()}
+              </p>
+              <span className="text-xs font-black text-slate-400 uppercase tracking-widest">UGX</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* MPC Administrative Rack */}
-      <div className={`grid grid-cols-1 lg:grid-cols-3 gap-8 transition-opacity duration-1000 ${isSettled ? 'opacity-30 pointer-events-none' : ''}`}>
-        {initialAdmins.map((admin) => {
-          const isSigned = sharesSubmitted.includes(admin.id);
-          const isProcessing = submitting === admin.id;
+      {/* 3-KEY SECURITY CHAMBER */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="institutional-header text-sm">3-Key Authorization Chamber</h3>
+          <div className="text-xs font-mono text-slate-400 uppercase tracking-widest">
+            Threshold: <span className="text-[#C5A059]">{signatureCount}</span> / 2 Required
+          </div>
+        </div>
 
-          return (
-            <div key={admin.id} className={`relative overflow-hidden rounded-[2rem] border-2 transition-all duration-700 ${
-              isSigned ? 'border-emerald-500/50 bg-emerald-950/5' : 'border-slate-800 bg-slate-900/20 shadow-xl'
-            }`}>
-              <div className="p-8 space-y-8">
-                <div className="flex justify-between items-center">
-                  <div className={`p-3 rounded-xl border transition-colors ${isSigned ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-slate-950 border-slate-800 text-slate-600'}`}>
-                    <UserCheck size={24} />
+        <div className={`grid grid-cols-1 lg:grid-cols-3 gap-6 transition-all duration-500 ${isSettled ? 'opacity-50 pointer-events-none' : ''}`}>
+          {authorityNodes.map((admin) => {
+            const isSigned = sharesSubmitted.includes(admin.id);
+            const isProcessing = submitting === admin.id;
+
+            return (
+              <div 
+                key={admin.id} 
+                className={`institutional-card overflow-hidden transition-all duration-300 ${
+                  isSigned 
+                    ? 'border-emerald-500/40 bg-emerald-500/5 shadow-[0_0_20px_rgba(16,185,129,0.1)]' 
+                    : 'border-[#30363d]'
+                }`}
+              >
+                <div className="p-6 space-y-6">
+                  {/* Authority Header */}
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="text-xs font-black text-[#C5A059] uppercase tracking-widest mb-1">Node {admin.id}</p>
+                      <h4 className="institutional-header text-sm leading-tight">{admin.role}</h4>
+                      <p className="text-xs text-slate-500 font-mono uppercase tracking-widest mt-2">{admin.name}</p>
+                    </div>
+                    <div className={`p-2 rounded-lg transition-all ${
+                      isSigned 
+                        ? 'bg-emerald-500/10 text-emerald-400' 
+                        : 'bg-[#0d1117] text-slate-500'
+                    }`}>
+                      <UserCheck size={18} />
+                    </div>
                   </div>
-                  <span className="text-xs font-mono text-slate-600 font-black tracking-widest uppercase">Port 0{admin.id}</span>
-                </div>
 
-                <div>
-                  <h3 className="text-sm font-black text-slate-100 uppercase tracking-tight leading-tight">{admin.role}</h3>
-                  <p className="text-xs text-slate-500 font-mono uppercase tracking-widest mt-1.5 font-bold">{admin.name}</p>
-                </div>
-
-                {/* Share Input Field */}
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center px-1">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                      <ChevronRight size={12} className="text-sky-500" /> Auth Share Entry
+                  {/* Auth Share Entry */}
+                  <div className="space-y-2">
+                    <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest block">
+                      Cryptographic Share
                     </label>
+                    <div className="relative">
+                      <input 
+                        type="password"
+                        value={adminShares[admin.id]}
+                        onChange={(e) => handleShareChange(admin.id, e.target.value)}
+                        disabled={isSigned || batch.status === 'SETTLED' || batch.status === 'CRITICAL_COMPROMISE'}
+                        className="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2.5 text-xs font-mono text-slate-300 focus:outline-none focus:border-[#C5A059]/50 disabled:opacity-50 disabled:bg-slate-950/50"
+                        placeholder="••••••••••••••••"
+                      />
+                      {isSigned && (
+                        <div className="absolute inset-0 bg-emerald-500/5 rounded-lg flex items-center justify-center border border-emerald-500/20">
+                          <span className="text-[9px] font-mono text-emerald-400 font-black tracking-widest uppercase">Locked</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div className="relative group/input">
-                    <input 
-                      type="password"
-                      value={adminShares[admin.id]}
-                      onChange={(e) => handleShareChange(admin.id, e.target.value)}
-                      disabled={isSigned || batch.status === 'SETTLED'}
-                      className="w-full bg-black/40 border-2 border-slate-800 rounded-xl px-4 py-3.5 text-xs font-mono text-sky-400 focus:outline-none focus:border-sky-500/50 transition-all placeholder:text-slate-800 group-hover/input:border-slate-700"
-                      placeholder="HEX_AUTH_KEY"
-                    />
-                    {isSigned && (
-                      <div className="absolute inset-0 bg-emerald-950/90 backdrop-blur-[3px] rounded-lg flex items-center justify-center border border-emerald-500/30 animate-in fade-in duration-500">
-                        <span className="text-[10px] font-mono text-emerald-400 font-black tracking-widest uppercase">Encrypted // Locked</span>
-                      </div>
+
+                  {/* Commit Button */}
+                  <button
+                    onClick={() => handleSign(admin)}
+                    disabled={isProcessing || isSigned || batch.status === 'SETTLED' || batch.status === 'CRITICAL_COMPROMISE'}
+                    className={`w-full py-3 rounded-lg font-black text-xs uppercase tracking-[0.15em] flex items-center justify-center gap-2 transition-all active:scale-95 ${
+                      isSigned 
+                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 cursor-not-allowed' 
+                        : 'bg-[#0d1117] border border-[#30363d] text-slate-300 hover:border-[#C5A059]/50 hover:text-[#C5A059]'
+                    }`}
+                  >
+                    {isProcessing ? (
+                      <>
+                        <div className="w-4 h-4 rounded-full border-2 border-[#C5A059]/30 border-t-[#C5A059] animate-spin" />
+                        Processing
+                      </>
+                    ) : isSigned ? (
+                      <>
+                        <CheckCircle2 size={16} />
+                        Authorized
+                      </>
+                    ) : (
+                      <>
+                        <LockKeyhole size={16} />
+                        Commit Share
+                      </>
                     )}
-                  </div>
+                  </button>
                 </div>
-
-                <button
-                  onClick={() => handleSign(admin)}
-                  disabled={isProcessing || isSigned || batch.status === 'SETTLED' || batch.status === 'CRITICAL_COMPROMISE'}
-                  className={`w-full py-4.5 py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-3 transition-all active:scale-[0.97] ${
-                    isSigned 
-                      ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 shadow-inner' 
-                      : 'bg-slate-950 border-2 border-slate-800 text-slate-400 hover:bg-slate-900 hover:text-sky-400 hover:border-sky-500/50 shadow-2xl'
-                  }`}
-                >
-                  {isProcessing ? (
-                    <RefreshCw size={18} className="animate-spin" />
-                  ) : isSigned ? (
-                    <CheckCircle2 size={18} />
-                  ) : (
-                    <Key size={18} />
-                  )}
-                  {isSigned ? "Access Granted" : "Commit Share"}
-                </button>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      </section>
 
-      <MPCVisualizer />
+      {/* EXECUTION & STATUS SECTION */}
+      <section className="space-y-4 mt-10">
+        {/* Execution Message Alert */}
+        {executionMessage && (
+          <div className={`institutional-card p-4 flex items-start gap-3 animate-in fade-in duration-300 ${
+            executionMessage.includes('INSUFFICIENT') 
+              ? 'system-warning' 
+              : 'system-success'
+          }`}>
+            <div className="mt-1">
+              {executionMessage.includes('INSUFFICIENT') ? (
+                <AlertCircle size={18} />
+              ) : (
+                <CheckCircle2 size={18} />
+              )}
+            </div>
+            <div className="flex-1">
+              <p className="text-xs font-mono uppercase tracking-tight font-bold">{executionMessage}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Execute Clearing Button */}
+        <button
+          onClick={handleExecuteClearing}
+          disabled={isSettled || batch.status === 'CRITICAL_COMPROMISE'}
+          className={`w-full py-4 rounded-lg font-black text-sm uppercase tracking-[0.15em] transition-all active:scale-[0.98] ${
+            isSettled || batch.status === 'CRITICAL_COMPROMISE'
+              ? 'bg-slate-900 text-slate-500 cursor-not-allowed border border-slate-800'
+              : 'bg-[#C5A059] text-black border border-[#C5A059] hover:bg-[#D4B873] shadow-lg hover:shadow-[0_0_20px_rgba(197,160,89,0.3)]'
+          }`}
+        >
+          {isSettled ? 'Transaction Settled' : 'Execute Settlement Clearing'}
+        </button>
+      </section>
+
+      {/* Settlement Success Display */}
+      {isSettled && (
+        <div className="institutional-card system-success p-6 border-l-4 border-emerald-500">
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-emerald-500/10 rounded-lg">
+              <CheckCircle2 className="text-emerald-400" size={24} />
+            </div>
+            <div>
+              <h4 className="font-black text-sm text-emerald-300 uppercase tracking-tight mb-1">
+                Transaction Authenticated & Settled
+              </h4>
+              <p className="text-xs text-emerald-200/80 mb-2">
+                {signatureCount}-of-3 Quorum Verified. Funds disbursed successfully via RTGS network.
+              </p>
+              <p className="data-mono text-xs text-emerald-400 bg-black/30 p-2 rounded border border-emerald-500/20 break-all">
+                {batch.combined_signature || "AUTHENTICATION_HASH_LEDGER_CONFIRMATION"}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

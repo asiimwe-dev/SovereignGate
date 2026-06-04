@@ -3,15 +3,15 @@ import { SystemProvider, useSystem } from './context/SystemContext';
 import CommandConsole from './components/CommandConsole';
 import HeistControl from './components/HeistControl';
 import AlertModal from './components/Shared/AlertModal';
-import { ShieldCheck, Activity } from 'lucide-react';
+import { Building2, Activity } from 'lucide-react';
 
 const AppContent = () => {
   const system = useSystem();
   
   if (!system) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <div className="text-red-500 font-mono animate-pulse">CRITICAL_SYSTEM_ERROR: CONTEXT_UNAVAILABLE</div>
+      <div className="min-h-screen bg-[#0d1117] flex items-center justify-center">
+        <div className="text-red-500 font-mono animate-pulse">CRITICAL SYSTEM ERROR: CONTEXT UNAVAILABLE</div>
       </div>
     );
   }
@@ -19,7 +19,7 @@ const AppContent = () => {
   const { isCompromised } = system;
 
   return (
-    <div className="min-h-screen relative flex flex-col md:flex-row transition-all duration-700">
+    <div className="min-h-screen relative flex flex-col md:flex-row transition-all duration-700 bg-[#0d1117]">
       {/* 
           ALARM OVERLAY: AlertModal 
           Positioned as a direct child of the root relative container to ensure it stays 
@@ -27,54 +27,51 @@ const AppContent = () => {
       */}
       {isCompromised && <AlertModal />}
       
-      {/* Left 75%: The Fortress */}
-      <main className={`w-full md:w-[75%] p-8 bg-[#020617] border-r border-slate-800/50 relative selection:bg-sky-500/30 transition-all duration-700 ${isCompromised ? 'pointer-events-none opacity-50 blur-sm' : ''}`}>
-        <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-50 bg-[length:100%_2px,3px_100%]"></div>
+      {/* Left 75%: RTGS Settlement Gateway (Main) */}
+      <main className={`w-full md:w-[75%] p-8 bg-[#0d1117] border-r border-[#30363d] relative selection:bg-[#C5A059]/20 transition-all duration-700 ${isCompromised ? 'pointer-events-none opacity-50 blur-sm' : ''}`}>
+        <div className="absolute inset-0 pointer-events-none opacity-[0.02] institutional-grid z-0"></div>
         
-        <header className="mb-12 border-b border-slate-800/50 pb-6 flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <div className="relative group">
-              <div className="absolute -inset-1 bg-gradient-to-r from-sky-600 to-emerald-600 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200 animate-pulse"></div>
-              <div className="relative p-2 bg-slate-900 rounded-full border border-slate-800">
-                <ShieldCheck className="text-sky-400" size={24} />
+        <header className="mb-10 border-b border-[#30363d] pb-6 flex justify-between items-start md:items-center flex-col md:flex-row gap-4">
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-3 bg-[#161b22] rounded-lg border border-[#C5A059]/30">
+                <Building2 className="text-[#C5A059]" size={22} />
+              </div>
+              <div>
+                <h1 className="text-2xl md:text-3xl institutional-header text-slate-50">
+                  BANK OF UGANDA
+                </h1>
+                <p className="text-[11px] font-mono text-[#C5A059] tracking-[0.15em] uppercase mt-0.5">
+                  Sovereign Integrated Financial Management Gateway
+                </p>
               </div>
             </div>
-            <div>
-              <h1 className="text-3xl font-black text-slate-100 tracking-tighter uppercase italic flex items-center gap-2">
-                Sovereign<span className="text-sky-500">Gate</span>
-                <span className="inline-block w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_#10b981]"></span>
-              </h1>
-              <p className="text-[10px] text-slate-500 font-mono tracking-[0.4em] uppercase mt-1">
-                National Treasury Control Core // Auth Phase 2
-              </p>
-            </div>
+            <p className="text-xs text-slate-400 font-mono uppercase tracking-widest ml-14 mt-1">RTGS Settlement Terminal — Multi-Signature Authorization Protocol</p>
           </div>
           
-          <div className="hidden lg:flex items-center gap-8 px-6 py-3 bg-slate-900/50 rounded-2xl border border-slate-800/50 backdrop-blur-sm">
-            <div className="space-y-1">
-              <p className="text-[9px] font-mono text-slate-500 uppercase tracking-widest">Uptime Metric</p>
-              <div className="flex items-center gap-2">
-                <Activity size={12} className="text-emerald-500 animate-pulse" />
-                <span className="text-xs font-mono text-emerald-400">99.99997%</span>
+          <div className="flex items-center gap-6 px-5 py-3 bg-[#161b22] rounded-xl border border-[#30363d]">
+            <div>
+              <p className="text-[9px] font-mono text-slate-500 uppercase tracking-widest">System Status</p>
+              <div className="flex items-center gap-2 mt-1">
+                <Activity size={14} className="text-emerald-500 animate-institutional-pulse" />
+                <span className="text-sm font-black text-slate-100 uppercase tracking-tight">OPERATIONAL</span>
               </div>
             </div>
-            <div className="w-[1px] h-8 bg-slate-800"></div>
-            <div className="space-y-1">
-              <p className="text-[9px] font-mono text-slate-500 uppercase tracking-widest">System Status</p>
-              <div className="flex items-center gap-2 text-sky-400">
-                <span className="text-xs font-mono font-bold tracking-widest">ENCRYPTED</span>
-              </div>
+            <div className="w-[1px] h-8 bg-[#30363d]"></div>
+            <div>
+              <p className="text-[9px] font-mono text-slate-500 uppercase tracking-widest">Uptime</p>
+              <span className="text-sm font-mono text-emerald-400 font-bold tracking-tight">99.99997%</span>
             </div>
           </div>
         </header>
         
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-5xl">
           <CommandConsole />
         </div>
       </main>
 
-      {/* Right 25%: The Attack Vector */}
-      <aside className={`w-full md:w-[25%] bg-black relative shadow-[-20px_0_50px_rgba(0,0,0,0.5)] z-10 border-l border-slate-800/50 md:sticky md:top-0 md:h-screen overflow-hidden transition-all duration-700 ${isCompromised ? 'pointer-events-none opacity-50 blur-sm' : ''}`}>
+      {/* Right 25%: Network Vulnerability & Penetration Testing Control */}
+      <aside className={`w-full md:w-[25%] bg-[#161b22] relative border-l border-[#30363d] md:sticky md:top-0 md:h-screen overflow-y-auto transition-all duration-700 ${isCompromised ? 'pointer-events-none opacity-50 blur-sm' : ''}`}>
         <HeistControl />
       </aside>
     </div>
