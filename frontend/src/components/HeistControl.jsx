@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useApi } from '../hooks/useApi';
-import { Terminal, Zap, AlertTriangle, Skull, Activity, Flame, ChevronRight, Binary } from 'lucide-react';
+import { Terminal, Zap, AlertTriangle, Skull, Activity, Flame, ChevronRight, Binary, RotateCcw } from 'lucide-react';
 
 const HeistControl = () => {
-  const { triggerInject } = useApi();
+  const { triggerInject, resetSystem } = useApi();
   const [loading, setLoading] = useState(false);
+  const [resetting, setReseting] = useState(false);
   const [logs, setLogs] = useState([
     "INITIALIZING_EXPLOIT_VECTOR...",
     "SCANNING_TREASURY_NETWORK... DONE",
@@ -37,6 +38,18 @@ const HeistControl = () => {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleReset = async () => {
+    setReseting(true);
+    try {
+      await resetSystem();
+      setLogs(["SYSTEM_REBOOT_DETECTED", "WIPING_BREACH_ARTIFACTS...", "EXPLOIT_VECTOR_OFFLINE"]);
+    } catch (err) {
+      alert(err);
+    } finally {
+      setReseting(false);
     }
   };
 
@@ -79,7 +92,7 @@ const HeistControl = () => {
             {logs.map((log, i) => (
               <div key={i} className="flex gap-3">
                 <span className="text-red-900 shrink-0 select-none">[{new Date().toLocaleTimeString([], {hour12: false})}]</span>
-                <span className={log.includes("GRANTED") ? "text-emerald-500" : "text-red-600/80"}>
+                <span className={log.includes("GRANTED") || log.includes("REBOOT") ? "text-emerald-500" : "text-red-600/80"}>
                   <ChevronRight size={10} className="inline mr-1" />
                   {log}
                 </span>
@@ -101,10 +114,7 @@ const HeistControl = () => {
             aria-label="Inject malicious script to modify database"
             className="w-full group relative overflow-hidden rounded-2xl transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none shadow-[0_0_30px_rgba(153,27,27,0.2)]"
           >
-            {/* Pulsing Gradient Backdrop */}
             <div className="absolute inset-0 bg-gradient-to-br from-red-600 via-red-900 to-black group-hover:from-red-500 group-hover:via-red-800 group-hover:to-red-950 transition-all duration-500"></div>
-            
-            {/* Scanner Line */}
             <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent via-red-400/10 to-transparent h-1/2 w-full animate-[marquee_1.5s_linear_infinite] opacity-50"></div>
 
             <div className="relative p-10 flex flex-col items-center gap-5 border border-white/5 backdrop-blur-sm">
@@ -118,10 +128,6 @@ const HeistControl = () => {
                 <span className="block font-black text-white uppercase tracking-tighter text-lg italic leading-tight">
                   Inject Malicious<br/>Script
                 </span>
-                <div className="flex items-center justify-center gap-3">
-                   <Activity size={12} className="text-red-700 animate-pulse" />
-                   <span className="text-[10px] text-red-500 font-mono uppercase font-black tracking-widest">Bypass Auth Layer</span>
-                </div>
               </div>
             </div>
           </button>
@@ -129,14 +135,23 @@ const HeistControl = () => {
           <div className="p-5 rounded-2xl bg-red-950/10 border border-red-900/20 flex gap-4">
             <AlertTriangle size={18} className="text-red-900 shrink-0 mt-0.5" />
             <p className="text-[10px] text-red-900 leading-relaxed font-bold italic">
-              WARNING: This execution directly mutates the persistence layer, simulating a root-level breach bypassing all MPC protocols.
+              WARNING: Directly mutates persistence layer, bypassing MPC protocols.
             </p>
           </div>
         </div>
       </div>
 
-      {/* Breach Version */}
-      <div className="p-6 border-t border-red-950/30 bg-black/40">
+      {/* Forensic Reset (Authorized Recovery) */}
+      <div className="p-6 border-t border-red-950/30 bg-black/40 space-y-4">
+        <button 
+          onClick={handleReset}
+          disabled={resetting}
+          className="w-full py-3 bg-zinc-900 hover:bg-emerald-950 border border-emerald-900/30 text-emerald-500 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95"
+        >
+          {resetting ? <RotateCcw className="animate-spin" size={14} /> : <RotateCcw size={14} />}
+          Authorized System Reset
+        </button>
+
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between text-red-950 font-black italic tracking-[0.3em] text-[9px]">
             <div className="flex items-center gap-2">

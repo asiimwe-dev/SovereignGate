@@ -1,5 +1,7 @@
 from fastapi import APIRouter
-from ..database import get_db_connection
+from ..database import get_db_connection, reset_db
+from ..services.memory_buffer import MemoryBuffer
+from ..config import INITIAL_BATCH_ID
 import json
 
 router = APIRouter(prefix="/api/v1/simulator", tags=["simulator"])
@@ -29,3 +31,13 @@ async def inject_malicious_script():
     
     conn.close()
     return {"status": "INJECTED", "message": "Database payload mutated by rogue script."}
+
+@router.post("/reset")
+async def reset_system():
+    """
+    Authorized recovery route to restore the database to its seed state
+    and purge any volatile cryptographic shares.
+    """
+    reset_db()
+    MemoryBuffer.clear_batch(INITIAL_BATCH_ID)
+    return {"status": "RESTORED", "message": "System integrity restored. Forensic cleanup complete."}

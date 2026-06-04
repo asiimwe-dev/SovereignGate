@@ -1,7 +1,22 @@
-import React from 'react';
-import { AlertTriangle, Lock, ShieldX, Database, ChevronRight, Binary, Fingerprint } from 'lucide-react';
+import React, { useState } from 'react';
+import { AlertTriangle, Lock, ShieldX, Database, ChevronRight, Binary, Fingerprint, RotateCcw } from 'lucide-react';
+import { useApi } from '../../hooks/useApi';
 
 const AlertModal = () => {
+  const { resetSystem } = useApi();
+  const [restoring, setRestoring] = useState(false);
+
+  const handleRestore = async () => {
+    setRestoring(true);
+    try {
+      await resetSystem();
+      // SystemContext polling will pick up the change and remove this modal
+    } catch (err) {
+      alert(err);
+      setRestoring(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-[9999] overflow-hidden crimson-meltdown flex items-center justify-center p-4 backdrop-blur-xl">
       {/* Cinematic Glitch Overlay */}
@@ -75,7 +90,7 @@ const AlertModal = () => {
               </div>
             </div>
 
-            {/* Lockout Protocol */}
+            {/* Lockout Protocol & Recovery Trigger */}
             <div className="border-t border-red-900/30 pt-10 flex flex-col md:flex-row justify-between items-center gap-10">
               <div className="grid grid-cols-2 gap-x-12 gap-y-6">
                 <div className="flex items-center gap-3 text-red-400 font-mono text-[10px] uppercase tracking-[0.2em] font-black">
@@ -86,21 +101,25 @@ const AlertModal = () => {
                   <ShieldX size={18} className="text-red-600 animate-pulse" />
                   <span>Gateway Purged</span>
                 </div>
-                <div className="flex items-center gap-3 text-red-400 font-mono text-[10px] uppercase tracking-[0.2em] font-black">
-                  <Database size={18} className="text-red-600 animate-pulse" />
-                  <span>Persistence Freeze</span>
-                </div>
-                <div className="flex items-center gap-3 text-red-400 font-mono text-[10px] uppercase tracking-[0.2em] font-black">
-                  <ChevronRight size={18} className="text-red-600 animate-pulse" />
-                  <span>Forensics Ready</span>
-                </div>
               </div>
               
-              <div className="relative group">
-                 <div className="absolute -inset-1 bg-red-600 rounded-lg blur opacity-40 group-hover:opacity-100 animate-pulse"></div>
-                 <div className="relative bg-red-600/10 border-2 border-red-600 text-red-600 px-10 py-4 font-black text-lg animate-pulse uppercase tracking-[0.2em] italic rounded-xl">
-                    HALT_LEVEL_9_ACTIVE
-                 </div>
+              <div className="flex flex-col items-center gap-4">
+                <button 
+                  onClick={handleRestore}
+                  disabled={restoring}
+                  className="relative group pointer-events-auto cursor-pointer"
+                >
+                  <div className="absolute -inset-1 bg-emerald-500 rounded-lg blur opacity-0 group-hover:opacity-40 transition duration-500"></div>
+                  <div className="relative bg-black border-2 border-emerald-500 text-emerald-500 px-8 py-4 font-black text-sm uppercase tracking-[0.2em] italic rounded-xl flex items-center gap-3 hover:bg-emerald-500 hover:text-black transition-all">
+                    {restoring ? (
+                      <RotateCcw className="animate-spin" size={18} />
+                    ) : (
+                      <RotateCcw size={18} />
+                    )}
+                    Perform Forensic Recovery
+                  </div>
+                </button>
+                <p className="text-[9px] font-mono text-red-700 uppercase tracking-widest">Authorized Override Required</p>
               </div>
             </div>
           </div>

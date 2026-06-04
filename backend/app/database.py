@@ -41,3 +41,12 @@ def init_db():
     
     conn.commit()
     conn.close()
+
+def reset_db():
+    """Wipes the database and re-initializes with seed data."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM payment_batches")
+    conn.commit()
+    conn.close()
+    init_db()

@@ -33,5 +33,16 @@ export const useApi = () => {
     }
   };
 
-  return { submitShare, triggerInject };
+  const resetSystem = async () => {
+    try {
+      const response = await axios.post(`${API_BASE}/simulator/reset`);
+      setSharesSubmitted([]); // Reset local UI state
+      await fetchStatus();
+      return response.data;
+    } catch (error) {
+      throw error.response?.data?.detail || "System reset failed";
+    }
+  };
+
+  return { submitShare, triggerInject, resetSystem };
 };

@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 from ..database import get_db_connection
 from ..config import EXPECTED_HASH, calculate_hash
 from ..models import PaymentBatchResponse
+from ..services.memory_buffer import MemoryBuffer
 import json
 
 router = APIRouter(prefix="/api/v1/gate", tags=["gate"])
@@ -32,6 +33,9 @@ async def get_current_batch():
         conn.execute("UPDATE payment_batches SET status = ? WHERE batch_id = ?", (status, batch_data["batch_id"]))
         conn.commit()
         conn.close()
+        
+        # Purge all volatile shares for this batch immediately
+        MemoryBuffer.clear_batch(batch_data["batch_id"])
 
     return PaymentBatchResponse(
         batch_id=batch_data["batch_id"],
