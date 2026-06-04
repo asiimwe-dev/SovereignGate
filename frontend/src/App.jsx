@@ -19,12 +19,16 @@ const AppContent = () => {
   const { isCompromised } = system;
 
   return (
-    <div className={`min-h-screen flex flex-col md:flex-row overflow-hidden transition-all duration-700 ${isCompromised ? 'pointer-events-none' : ''}`}>
+    <div className="min-h-screen relative flex flex-col md:flex-row transition-all duration-700">
+      {/* 
+          ALARM OVERLAY: AlertModal 
+          Positioned as a direct child of the root relative container to ensure it stays 
+          interactive (pointer-events-auto) regardless of the content's state.
+      */}
       {isCompromised && <AlertModal />}
       
       {/* Left 75%: The Fortress */}
-      <main className="min-h-screen w-full md:w-[75%] p-8 bg-[#020617] border-r border-slate-800/50 overflow-y-auto relative selection:bg-sky-500/30">
-        {/* Subtle Scanline Effect */}
+      <main className={`w-full md:w-[75%] p-8 bg-[#020617] border-r border-slate-800/50 relative selection:bg-sky-500/30 transition-all duration-700 ${isCompromised ? 'pointer-events-none opacity-50 blur-sm' : ''}`}>
         <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-50 bg-[length:100%_2px,3px_100%]"></div>
         
         <header className="mb-12 border-b border-slate-800/50 pb-6 flex justify-between items-center">
@@ -70,7 +74,7 @@ const AppContent = () => {
       </main>
 
       {/* Right 25%: The Attack Vector */}
-      <aside className="w-full md:w-[25%] bg-black overflow-hidden relative shadow-[-20px_0_50px_rgba(0,0,0,0.5)] z-10 border-l border-slate-800/50">
+      <aside className={`w-full md:w-[25%] bg-black relative shadow-[-20px_0_50px_rgba(0,0,0,0.5)] z-10 border-l border-slate-800/50 md:sticky md:top-0 md:h-screen overflow-hidden transition-all duration-700 ${isCompromised ? 'pointer-events-none opacity-50 blur-sm' : ''}`}>
         <HeistControl />
       </aside>
     </div>
