@@ -56,10 +56,10 @@ const HeistControl = () => {
       {/* Professional Header */}
       <div className="p-6 border-b border-[#30363d] bg-[#0d1117] flex items-center justify-between">
         <div>
-          <h2 className="font-mono text-xs font-black text-slate-300 tracking-tight uppercase">
+          <h2 className="font-mono text-sm font-black text-slate-300 tracking-tight uppercase">
             Network Vulnerability & Penetration Testing
           </h2>
-          <p className="text-[8px] font-mono text-slate-500 uppercase tracking-widest mt-1">Diagnostic Payload Mutation Suite</p>
+          <p className="text-xs font-mono text-slate-500 uppercase tracking-widest mt-1">Diagnostic Payload Mutation Suite</p>
         </div>
         <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
       </div>
@@ -72,9 +72,9 @@ const HeistControl = () => {
               <div className="w-2 h-2 rounded-full bg-slate-700"></div>
               <div className="w-2 h-2 rounded-full bg-slate-700"></div>
             </div>
-            <span className="text-[8px] font-mono text-slate-600 uppercase font-black tracking-widest">Terminal Output</span>
+            <span className="text-xs font-mono text-slate-600 uppercase font-black tracking-widest">Terminal Output</span>
           </div>
-          <div className="p-4 font-mono text-[8px] space-y-1 h-48 overflow-y-auto text-slate-500">
+          <div className="p-4 font-mono text-xs space-y-1 h-48 overflow-y-auto text-slate-500">
             {logs.map((log, i) => (
               <div key={i} className="flex gap-2 text-slate-600 hover:text-slate-400 transition-colors">
                 <span className="text-slate-700 shrink-0">{'>'}</span>
@@ -119,8 +119,8 @@ const HeistControl = () => {
 
           {/* Warning Box */}
           <div className="system-critical p-3 rounded-lg border-l-4 border-red-600/50 flex gap-2">
-            <AlertTriangle size={14} className="text-red-600 shrink-0 mt-0.5" />
-            <p className="text-[8px] text-red-500/80 leading-tight uppercase tracking-tighter font-black">
+            <AlertTriangle size={16} className="text-red-600 shrink-0 mt-0.5" />
+            <p className="text-xs text-red-500/80 leading-snug uppercase tracking-tighter font-black">
               Alters underlying database persistence layer out-of-band. Bypasses MPC authentication validation. Triggers RTGS isolation on detection.
             </p>
           </div>
@@ -129,11 +129,11 @@ const HeistControl = () => {
 
       {/* Reset Controls Footer */}
       <div className="p-6 border-t border-[#30363d] bg-[#0d1117] space-y-2">
-        <p className="text-[8px] font-mono text-slate-600 uppercase tracking-widest mb-3">Authorized Recovery</p>
+        <p className="text-xs font-mono text-slate-600 uppercase tracking-widest mb-3">Authorized Recovery</p>
         <button 
           onClick={handleReset}
           disabled={resetting}
-          className="w-full py-2.5 bg-[#161b22] hover:bg-emerald-500/10 border border-[#30363d] hover:border-emerald-500/30 text-emerald-500 text-[9px] font-black uppercase tracking-widest rounded-lg flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50"
+          className="w-full py-2.5 bg-[#161b22] hover:bg-emerald-500/10 border border-[#30363d] hover:border-emerald-500/30 text-emerald-500 text-xs font-black uppercase tracking-widest rounded-lg flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50"
         >
           {resetting ? (
             <div className="w-3 h-3 rounded-full border border-emerald-500/50 border-t-emerald-500 animate-spin" />

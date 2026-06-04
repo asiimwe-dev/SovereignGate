@@ -18,6 +18,13 @@ const CommandConsole = () => {
   const [executing, setExecuting] = useState(false);
   const [executionMessage, setExecutionMessage] = useState('');
 
+  // Reset shares when batch ID changes
+  React.useEffect(() => {
+    if (batch?.batch_id) {
+      setSharesSubmitted([]);
+    }
+  }, [batch?.batch_id, setSharesSubmitted]);
+
   const authorityNodes = [
     { 
       id: 1, 
@@ -54,11 +61,11 @@ const CommandConsole = () => {
     setSubmitting(admin.id);
     try {
       const response = await submitShare(batch.batch_id, admin.id, adminShares[admin.id], `HW-TOKEN-${admin.id}-${Date.now()}`);
-      // Only add to sharesSubmitted if not already there
+      console.log('Share submitted:', response);
+      // Track which node was signed from the response
       if (!sharesSubmitted.includes(admin.id)) {
         setSharesSubmitted(prev => [...prev, admin.id]);
       }
-      console.log('Share submitted:', response);
     } catch (err) {
       console.error('Share submission error:', err);
       setExecutionMessage(`ERROR: Failed to submit share for Node ${admin.id}`);
@@ -185,15 +192,15 @@ const CommandConsole = () => {
                     : 'border-[#30363d]'
                 }`}
               >
-                <div className="p-6 space-y-6">
+                <div className="p-6 space-y-5">
                   {/* Authority Header */}
-                  <div className="flex justify-between items-start">
-                    <div>
+                  <div className="flex justify-between items-start gap-3">
+                    <div className="flex-1">
                       <p className="text-xs font-black text-[#C5A059] uppercase tracking-widest mb-1">Node {admin.id}</p>
-                      <h4 className="institutional-header text-base font-black leading-tight">{admin.role}</h4>
+                      <h4 className="institutional-header text-base font-black leading-snug">{admin.role}</h4>
                       <p className="text-xs text-slate-500 font-mono uppercase tracking-widest mt-2">{admin.name}</p>
                     </div>
-                    <div className={`p-2 rounded-lg transition-all ${
+                    <div className={`p-2 rounded-lg transition-all flex-shrink-0 ${
                       isSigned 
                         ? 'bg-emerald-500/10 text-emerald-400' 
                         : 'bg-[#0d1117] text-slate-500'
@@ -213,7 +220,7 @@ const CommandConsole = () => {
                         value={adminShares[admin.id]}
                         onChange={(e) => handleShareChange(admin.id, e.target.value)}
                         disabled={isSigned || batch.status === 'SETTLED' || batch.status === 'CRITICAL_COMPROMISE'}
-                        className="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-4 py-3 text-sm font-mono text-slate-300 focus:outline-none focus:border-[#C5A059]/50 disabled:opacity-50 disabled:bg-slate-950/50"
+                        className="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-4 py-3 text-sm font-mono text-slate-300 focus:outline-none focus:border-[#C5A059]/50 disabled:opacity-50 disabled:bg-slate-950/50 transition-colors"
                         placeholder="••••••••••••••••"
                       />
                       {isSigned && (
