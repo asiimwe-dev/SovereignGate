@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useApi } from '../hooks/useApi';
-import { Zap, AlertTriangle, Database, ChevronRight, RotateCcw, ShieldAlert, Lock } from 'lucide-react';
+import { Zap, AlertTriangle, Database, ChevronRight, RotateCcw, ShieldCheck, Terminal, ShieldAlert } from 'lucide-react';
 
 const HeistControl = () => {
   const { triggerInject, resetSystem } = useApi();
   const [loading, setLoading] = useState(false);
   const [resetting, setResetting] = useState(false);
   const [logs, setLogs] = useState([
-    "SYS_BOOT_SEQUENCE...",
-    "RTGS_NETWORK_INTERFACE_INITIALIZED",
-    "DIAGNOSTIC_TOOLS_READY",
-    "AWAITING_ADMIN_COMMAND"
+    "SYS_BOOT_SEQUENCE_OK",
+    "RTGS_CRYPTO_INTERFACE_READY",
+    "MUTATION_MONITORING_ENGINE_ACTIVE",
+    "AWAITING_ADMINISTRATIVE_ACTIONS"
   ]);
   
   const logEndRef = useRef(null);
@@ -23,16 +23,17 @@ const HeistControl = () => {
     setLoading(true);
     setLogs(prev => [
       ...prev,
-      ">> INITIATING_PAYLOAD_MUTATION_TEST",
-      ">> DATABASE_ACCESS_LAYER_PROBING",
-      ">> EXECUTING_PERSISTENCE_MODIFICATION",
-      ">> DATABASE_RECORD_ALTERED"
+      ">> INITIATING DIAGNOSTIC MUTATION TEST",
+      ">> BYPASSING MPC VALIDATION LAYER",
+      ">> MUTATING LEDGER RECORD PAYLOAD",
+      ">> DATABASE PERSISTENCE LAYER MODIFIED"
     ]);
     try {
       await triggerInject();
+      setLogs(prev => [...prev, "CRITICAL: LEDGER_INTEGRITY_VIOLATION_TRIGGERED"]);
     } catch (err) {
       console.error(err);
-      setLogs(prev => [...prev, "ERROR: INJECTION_FAILED"]);
+      setLogs(prev => [...prev, "ERROR: INJECTION_FAILURE"]);
     } finally {
       setLoading(false);
     }
@@ -40,50 +41,64 @@ const HeistControl = () => {
 
   const handleReset = async () => {
     setResetting(true);
-    setLogs(prev => [...prev, ">> INITIATING_SYSTEM_RESTORE", ">> DATABASE_ROLLBACK_ACTIVE"]);
+    setLogs(prev => [...prev, ">> ROLLBACK COMMAND RECEIVED", ">> RE-INITIALIZING DATABASE LEDGER"]);
     try {
       await resetSystem();
-      setLogs(["SYS_BOOT_SEQUENCE...", "SYSTEM_RESTORED_TO_BASELINE", "DIAGNOSTIC_TOOLS_READY"]);
+      setLogs([
+        "SYS_BOOT_SEQUENCE_OK",
+        "DATABASE_RESTORED_TO_BASELINE_INTEGRITY",
+        "RTGS_MUTATION_MONITORING_ACTIVE"
+      ]);
     } catch (err) {
-      setLogs(prev => [...prev, "ERROR: RESTORE_FAILED"]);
+      setLogs(prev => [...prev, "ERROR: DATABASE_RESTORE_FAILED"]);
     } finally {
       setResetting(false);
     }
   };
 
   return (
-    <div className="h-full flex flex-col bg-[#161b22] border-t md:border-t-0 md:border-l border-[#30363d] selection:bg-red-500/10">
-      {/* Professional Header */}
-      <div className="p-6 border-b border-[#30363d] bg-[#0d1117] flex items-center justify-between">
+    <div className="h-full flex flex-col bg-[#0f131a] border-t md:border-t-0 md:border-l border-[#1f2937] selection:bg-red-500/10">
+      
+      {/* Header */}
+      <div className="p-5 border-b border-[#1f2937] bg-[#07090e] flex items-center justify-between">
         <div>
-          <h2 className="font-mono text-sm font-black text-slate-300 tracking-tight uppercase">
-            Network Vulnerability & Penetration Testing
+          <h2 className="font-mono text-xs font-black text-slate-300 tracking-tight uppercase">
+            Vulnerability Simulation
           </h2>
-          <p className="text-xs font-mono text-slate-500 uppercase tracking-widest mt-1">Diagnostic Payload Mutation Suite</p>
+          <p className="text-[9px] font-mono text-slate-500 uppercase tracking-widest mt-0.5">Penetration testing suite</p>
         </div>
-        <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
+        <div className="flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
+          <span className="text-[8px] font-mono text-red-500 font-bold uppercase tracking-wider">Sim Mode</span>
+        </div>
       </div>
 
-      <div className="p-6 space-y-6 flex-grow overflow-y-auto">
-        {/* Diagnostic Log Terminal */}
-        <div className="institutional-card bg-[#0d1117] overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-2 bg-[#161b22] border-b border-[#30363d]">
-            <div className="flex gap-2">
-              <div className="w-2 h-2 rounded-full bg-slate-700"></div>
-              <div className="w-2 h-2 rounded-full bg-slate-700"></div>
+      <div className="p-5 space-y-5 flex-grow overflow-y-auto">
+        
+        {/* Diagnostic Terminal */}
+        <div className="institutional-card bg-[#07090e] border-[#1f2937] overflow-hidden flex flex-col">
+          <div className="flex items-center justify-between px-4 py-2 bg-[#0f131a] border-b border-[#1f2937]">
+            <div className="flex items-center gap-2">
+              <Terminal size={12} className="text-[#C5A059]" />
+              <span className="text-[9px] font-mono text-slate-400 uppercase font-black tracking-widest">Forensic logs</span>
             </div>
-            <span className="text-xs font-mono text-slate-600 uppercase font-black tracking-widest">Terminal Output</span>
+            <div className="flex gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-red-500/30"></span>
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500/30"></span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/30"></span>
+            </div>
           </div>
-          <div className="p-4 font-mono text-xs space-y-1 h-48 overflow-y-auto text-slate-500">
+          
+          <div className="p-4 font-mono text-[10px] space-y-1.5 h-48 overflow-y-auto text-slate-400">
             {logs.map((log, i) => (
-              <div key={i} className="flex gap-2 text-slate-600 hover:text-slate-400 transition-colors">
-                <span className="text-slate-700 shrink-0">{'>'}</span>
+              <div key={i} className="flex gap-1.5 text-slate-500 hover:text-slate-300 transition-colors leading-tight">
+                <span className="text-[#C5A059] shrink-0 font-bold">»</span>
                 <code className={`${
-                  log.includes("ALTERED") || log.includes("RESTORED")
-                    ? "text-emerald-500 font-bold"
-                    : log.includes("ERROR")
-                    ? "text-red-500 font-bold"
-                    : "text-slate-500"
+                  log.includes("MUTATION") || log.includes("MODIFIED") || log.includes("VIOLATION")
+                    ? "text-red-400 font-bold"
+                    : log.includes("RESTORED") || log.includes("ACTIVE") || log.includes("OK")
+                    ? "text-emerald-400 font-bold"
+                    : "text-slate-400"
                 }`}>
                   {log}
                 </code>
@@ -93,56 +108,74 @@ const HeistControl = () => {
           </div>
         </div>
 
-        {/* Vulnerability Testing Controls */}
-        <div className="space-y-3">
-          {/* Primary Test Action */}
-          <div className="institutional-card p-4 bg-gradient-to-br from-[#0d1117] to-[#161b22] border border-red-600/20 hover:border-red-600/40 transition-all">
+        {/* Action Panel */}
+        <div className="space-y-4">
+          
+          {/* Inject Mutation Script Button */}
+          <div className="institutional-card p-4 bg-gradient-to-br from-[#07090e] to-[#0f131a] border-red-900/30 hover:border-red-500/30 transition-all shadow-lg">
             <button
               onClick={handleInject}
               disabled={loading}
-              className="w-full group transition-all active:scale-[0.98]"
+              className="w-full group cursor-pointer transition-all active:scale-[0.98]"
             >
-              <div className="flex flex-col items-center gap-3 py-2">
-                <div className={`p-3 rounded-lg transition-all ${
+              <div className="flex flex-col items-center gap-3">
+                <div className={`p-3 rounded-xl transition-all border ${
                   loading 
-                    ? 'bg-red-600/20 text-red-500 animate-pulse' 
-                    : 'bg-red-600/10 text-red-500 group-hover:bg-red-600/20'
+                    ? 'bg-red-500/20 text-red-500 border-red-500/30 animate-pulse' 
+                    : 'bg-red-950/20 text-red-400 border-red-900/20 group-hover:bg-red-500/10 group-hover:text-red-400 group-hover:border-red-500/30'
                 }`}>
-                  <Zap size={20} />
+                  <Zap size={18} />
                 </div>
-                <span className="block font-black text-xs text-slate-200 uppercase tracking-tight leading-tight">
-                  Run Payload Mutation Test Script
-                </span>
+                <div className="text-center space-y-1">
+                  <span className="block font-black text-[10px] text-slate-200 uppercase tracking-wider">
+                    Inject Out-Of-Band Mutation
+                  </span>
+                  <span className="block text-[8px] font-mono text-slate-500 uppercase tracking-widest">
+                    Simulates attacker DB rewrite
+                  </span>
+                </div>
               </div>
             </button>
           </div>
 
-          {/* Warning Box */}
-          <div className="system-critical p-3 rounded-lg border-l-4 border-red-600/50 flex gap-2">
-            <AlertTriangle size={16} className="text-red-600 shrink-0 mt-0.5" />
-            <p className="text-xs text-red-500/80 leading-snug uppercase tracking-tighter font-black">
-              Alters underlying database persistence layer out-of-band. Bypasses MPC authentication validation. Triggers RTGS isolation on detection.
-            </p>
+          {/* Warnings explaining what this does */}
+          <div className="p-3.5 rounded-xl bg-red-950/10 border border-red-900/25 flex gap-3 items-start">
+            <AlertTriangle size={16} className="text-red-500 shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <p className="text-[9px] text-red-400 leading-tight font-black uppercase tracking-wider">
+                Vulnerability Alert Vector
+              </p>
+              <p className="text-[8px] text-slate-500 leading-normal uppercase font-mono tracking-tight">
+                Alters database directly without MPC signing keys. Tests the hash integrity guard. Triggers emergency lockout on next query.
+              </p>
+            </div>
           </div>
+
         </div>
+
       </div>
 
-      {/* Reset Controls Footer */}
-      <div className="p-6 border-t border-[#30363d] bg-[#0d1117] space-y-2">
-        <p className="text-xs font-mono text-slate-600 uppercase tracking-widest mb-3">Authorized Recovery</p>
+      {/* Baseline Restore Controller */}
+      <div className="p-5 border-t border-[#1f2937] bg-[#07090e] space-y-3">
+        <div className="flex items-center gap-1.5 text-[9px] font-mono text-slate-500 uppercase tracking-widest">
+          <ShieldCheck size={12} className="text-emerald-500" />
+          <span>Incident Remediation</span>
+        </div>
+        
         <button 
           onClick={handleReset}
           disabled={resetting}
-          className="w-full py-2.5 bg-[#161b22] hover:bg-emerald-500/10 border border-[#30363d] hover:border-emerald-500/30 text-emerald-500 text-xs font-black uppercase tracking-widest rounded-lg flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50"
+          className="w-full py-3 bg-[#0f131a] hover:bg-emerald-500/5 border border-[#1f2937] hover:border-emerald-500/30 text-emerald-400 text-xs font-black uppercase tracking-widest rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer disabled:opacity-40"
         >
           {resetting ? (
-            <div className="w-3 h-3 rounded-full border border-emerald-500/50 border-t-emerald-500 animate-spin" />
+            <div className="w-3.5 h-3.5 rounded-full border-2 border-emerald-500/30 border-t-emerald-400 animate-spin" />
           ) : (
-            <RotateCcw size={12} />
+            <RotateCcw size={13} />
           )}
-          System Baseline Restore
+          System Rollback Recovery
         </button>
       </div>
+
     </div>
   );
 };

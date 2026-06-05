@@ -1,84 +1,185 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Institutional Banking Design System - Bank of Uganda */
+/* Premium Institutional Banking Design System - Bank of Uganda */
 @layer base {
+  :root {
+    --color-bg: #07090e;
+    --color-surface: #0f131a;
+    --color-surface-hover: #151a24;
+    --color-border: #1f2937;
+    --color-border-hover: #374151;
+    --color-gold: #C5A059;
+    --color-gold-hover: #D4B873;
+    --color-success: #10b981;
+    --color-warning: #f59e0b;
+    --color-critical: #ef4444;
+  }
+
   body {
-    @apply bg-[#0d1117] text-slate-100 font-sans selection:bg-[#C5A059]/20 selection:text-[#C5A059];
+    background-color: var(--color-bg);
+    color: #f1f5f9;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    selection-background-color: rgba(197, 160, 89, 0.2);
+    selection-color: var(--color-gold);
   }
 }
 
 @layer components {
-  /* Institutional Card Glass Effect */
+  /* Premium Glassmorphic Card Style */
   .institutional-card {
-    @apply bg-[#161b22] border border-[#30363d] rounded-xl shadow-lg;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 1rem;
+    box-shadow: 0 10px 30px -15px rgba(0, 0, 0, 0.7);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+  }
+
+  .institutional-card:hover {
+    border-color: var(--color-border-hover);
+    box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.8);
   }
 
   /* Bank of Uganda Gold Accent */
   .brand-gold {
-    @apply text-[#C5A059];
+    color: var(--color-gold);
   }
 
   .brand-gold-bg {
-    @apply bg-[#C5A059]/10 border border-[#C5A059]/20;
+    background-color: rgba(197, 160, 89, 0.08);
+    border: 1px solid rgba(197, 160, 89, 0.2);
   }
 
   /* System Status Colors */
   .system-success {
-    @apply bg-emerald-500/10 text-emerald-400 border-emerald-500/20;
+    background-color: rgba(16, 185, 129, 0.06);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.15);
   }
 
   .system-warning {
-    @apply bg-amber-500/10 text-amber-400 border-amber-500/20;
+    background-color: rgba(245, 158, 11, 0.06);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.15);
   }
 
   .system-critical {
-    @apply bg-red-500/10 text-red-500 border-red-500/20;
+    background-color: rgba(239, 68, 68, 0.06);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.15);
   }
 
-  /* Monospace for precision data */
+  /* Monospace for precision cryptographic data */
   .data-mono {
-    @apply font-mono tracking-tight;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    letter-spacing: -0.025em;
   }
 
   /* Professional header styling */
   .institutional-header {
-    @apply text-slate-50 font-black uppercase tracking-tight;
+    color: #f8fafc;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
   }
 
-  /* Subtle institutional grid */
+  /* Grid overlay for a secure command-center look */
   .institutional-grid {
     background-image: 
-      linear-gradient(90deg, rgba(48, 54, 61, 0.05) 1px, transparent 1px),
-      linear-gradient(rgba(48, 54, 61, 0.05) 1px, transparent 1px);
-    background-size: 20px 20px;
+      linear-gradient(90deg, rgba(31, 41, 55, 0.2) 1px, transparent 1px),
+      linear-gradient(rgba(31, 41, 55, 0.2) 1px, transparent 1px);
+    background-size: 24px 24px;
   }
 }
 
-@keyframes institutional-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
-}
-
-.animate-institutional-pulse {
-  animation: institutional-pulse 2s ease-in-out infinite;
-}
-
-/* Custom Scrollbar - Institutional Style */
+/* Custom Webkit scrollbar for terminal/dashboard */
 ::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  @apply bg-[#0d1117];
+  background: var(--color-bg);
 }
 ::-webkit-scrollbar-thumb {
-  @apply bg-[#30363d] rounded-full hover:bg-[#484f58] transition-colors;
+  background: var(--color-border);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-hover);
 }
 
-/* Smooth transitions for all interactive elements */
+/* Animations */
+@keyframes pulse-gold {
+  0%, 100% {
+    box-shadow: 0 0 0 0px rgba(197, 160, 89, 0.2);
+    border-color: rgba(197, 160, 89, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 15px 2px rgba(197, 160, 89, 0.4);
+    border-color: var(--color-gold);
+  }
+}
+
+@keyframes pulse-emerald {
+  0%, 100% {
+    box-shadow: 0 0 0 0px rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 15px 2px rgba(16, 185, 129, 0.3);
+    border-color: var(--color-success);
+  }
+}
+
+@keyframes laser-flow {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+
+@keyframes shake-extreme {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+@keyframes scan-line {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+/* Animation utilities */
+.animate-pulse-gold {
+  animation: pulse-gold 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-pulse-emerald {
+  animation: pulse-emerald 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-laser-flow {
+  stroke-dasharray: 8, 4;
+  animation: laser-flow 1s linear infinite;
+}
+
+.animate-shake-extreme {
+  animation: shake-extreme 0.5s ease-in-out infinite;
+}
+
+.animate-scan-line {
+  animation: scan-line 6s linear infinite;
+}
+
+/* Smooth transitions */
 * {
-  @apply transition-colors duration-200;
+  transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
+              border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
+              color 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
+              box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
