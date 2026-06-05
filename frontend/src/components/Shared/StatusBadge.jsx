@@ -35,7 +35,7 @@ const StatusBadge = ({ status }) => {
 
   return (
     <div className={clsx(
-      "px-3 py-1.5 rounded-lg text-[9px] border flex items-center gap-1.5 uppercase tracking-widest transition-all duration-500 font-black",
+      "px-3 py-1.5 rounded-lg text-xs border flex items-center gap-1.5 uppercase tracking-widest transition-all duration-500 font-black",
       config.style
     )}>
       {config.icon}

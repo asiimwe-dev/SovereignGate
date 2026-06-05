@@ -12,7 +12,7 @@ const AppContent = () => {
   if (!system) {
     return (
       <div className="min-h-screen bg-[#07090e] flex items-center justify-center">
-        <div className="text-red-500 font-mono animate-pulse">CRITICAL SYSTEM ERROR: CONTEXT UNAVAILABLE</div>
+        <div className="text-red-500 font-mono animate-pulse text-base">CRITICAL SYSTEM ERROR: CONTEXT UNAVAILABLE</div>
       </div>
     );
   }
@@ -36,35 +36,35 @@ const AppContent = () => {
           <div>
             <div className="flex items-center gap-3.5 mb-2">
               <div className="p-2.5 bg-[#0f131a] rounded-xl border border-[#C5A059]/35 shadow-md">
-                <Building2 className="text-[#C5A059]" size={20} />
+                <Building2 className="text-[#C5A059]" size={22} />
               </div>
               <div>
-                <h1 className="text-xl md:text-2xl institutional-header text-slate-100 flex items-center gap-2">
+                <h1 className="text-2xl md:text-3xl institutional-header text-slate-100 flex items-center gap-2">
                   BANK OF UGANDA
                 </h1>
-                <p className="text-[10px] font-mono text-[#C5A059] tracking-[0.2em] uppercase mt-0.5">
+                <p className="text-xs font-mono text-[#C5A059] tracking-[0.2em] uppercase mt-0.5 font-bold">
                   Sovereign Integrated Financial Gateway
                 </p>
               </div>
             </div>
-            <p className="text-[10px] text-slate-400 font-mono uppercase tracking-widest ml-14 mt-1">RTGS Settlement Terminal — Multi-Signature Authorization Protocol</p>
+            <p className="text-xs text-slate-400 font-mono uppercase tracking-widest ml-14 mt-1">RTGS Settlement Terminal — Multi-Signature Authorization Protocol</p>
           </div>
           
           <div className="flex items-center gap-5 px-4 py-2.5 bg-[#0f131a] rounded-xl border border-[#1f2937] shadow-sm">
             <div>
-              <p className="text-[8px] font-mono text-slate-500 uppercase tracking-widest">System Status</p>
+              <p className="text-xs font-mono text-slate-500 uppercase tracking-widest">System Status</p>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                 </span>
-                <span className="text-xs font-black text-slate-200 uppercase tracking-tight">OPERATIONAL</span>
+                <span className="text-sm font-black text-slate-200 uppercase tracking-tight">OPERATIONAL</span>
               </div>
             </div>
             <div className="w-[1px] h-6 bg-[#1f2937]"></div>
             <div>
-              <p className="text-[8px] font-mono text-slate-500 uppercase tracking-widest">Uptime</p>
-              <span className="text-xs font-mono text-emerald-400 font-bold tracking-tight mt-0.5 block">99.99997%</span>
+              <p className="text-xs font-mono text-slate-500 uppercase tracking-widest">Uptime</p>
+              <span className="text-sm font-mono text-emerald-400 font-bold tracking-tight mt-0.5 block">99.99997%</span>
             </div>
           </div>
         </header>

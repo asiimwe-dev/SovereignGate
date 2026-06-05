@@ -62,14 +62,14 @@ const HeistControl = () => {
       {/* Header */}
       <div className="p-5 border-b border-[#1f2937] bg-[#07090e] flex items-center justify-between">
         <div>
-          <h2 className="font-mono text-xs font-black text-slate-300 tracking-tight uppercase">
+          <h2 className="font-mono text-sm font-black text-slate-300 tracking-tight uppercase">
             Vulnerability Simulation
           </h2>
-          <p className="text-[9px] font-mono text-slate-500 uppercase tracking-widest mt-0.5">Penetration testing suite</p>
+          <p className="text-xs font-mono text-slate-500 uppercase tracking-widest mt-0.5">Penetration testing suite</p>
         </div>
         <div className="flex items-center gap-1.5">
           <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
-          <span className="text-[8px] font-mono text-red-500 font-bold uppercase tracking-wider">Sim Mode</span>
+          <span className="text-[10px] font-mono text-red-500 font-bold uppercase tracking-wider">Sim Mode</span>
         </div>
       </div>
 
@@ -79,8 +79,8 @@ const HeistControl = () => {
         <div className="institutional-card bg-[#07090e] border-[#1f2937] overflow-hidden flex flex-col">
           <div className="flex items-center justify-between px-4 py-2 bg-[#0f131a] border-b border-[#1f2937]">
             <div className="flex items-center gap-2">
-              <Terminal size={12} className="text-[#C5A059]" />
-              <span className="text-[9px] font-mono text-slate-400 uppercase font-black tracking-widest">Forensic logs</span>
+              <Terminal size={14} className="text-[#C5A059]" />
+              <span className="text-xs font-mono text-slate-400 uppercase font-black tracking-widest">Forensic logs</span>
             </div>
             <div className="flex gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-red-500/30"></span>
@@ -89,7 +89,7 @@ const HeistControl = () => {
             </div>
           </div>
           
-          <div className="p-4 font-mono text-[10px] space-y-1.5 h-48 overflow-y-auto text-slate-400">
+          <div className="p-4 font-mono text-xs space-y-1.5 h-48 overflow-y-auto text-slate-400">
             {logs.map((log, i) => (
               <div key={i} className="flex gap-1.5 text-slate-500 hover:text-slate-300 transition-colors leading-tight">
                 <span className="text-[#C5A059] shrink-0 font-bold">»</span>
@@ -124,13 +124,13 @@ const HeistControl = () => {
                     ? 'bg-red-500/20 text-red-500 border-red-500/30 animate-pulse' 
                     : 'bg-red-950/20 text-red-400 border-red-900/20 group-hover:bg-red-500/10 group-hover:text-red-400 group-hover:border-red-500/30'
                 }`}>
-                  <Zap size={18} />
+                  <Zap size={20} />
                 </div>
                 <div className="text-center space-y-1">
-                  <span className="block font-black text-[10px] text-slate-200 uppercase tracking-wider">
+                  <span className="block font-black text-xs text-slate-200 uppercase tracking-wider">
                     Inject Out-Of-Band Mutation
                   </span>
-                  <span className="block text-[8px] font-mono text-slate-500 uppercase tracking-widest">
+                  <span className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest">
                     Simulates attacker DB rewrite
                   </span>
                 </div>
@@ -140,12 +140,12 @@ const HeistControl = () => {
 
           {/* Warnings explaining what this does */}
           <div className="p-3.5 rounded-xl bg-red-950/10 border border-red-900/25 flex gap-3 items-start">
-            <AlertTriangle size={16} className="text-red-500 shrink-0 mt-0.5" />
+            <AlertTriangle size={18} className="text-red-500 shrink-0 mt-0.5" />
             <div className="space-y-1">
-              <p className="text-[9px] text-red-400 leading-tight font-black uppercase tracking-wider">
+              <p className="text-xs text-red-400 leading-tight font-black uppercase tracking-wider">
                 Vulnerability Alert Vector
               </p>
-              <p className="text-[8px] text-slate-500 leading-normal uppercase font-mono tracking-tight">
+              <p className="text-[11px] text-slate-500 leading-normal uppercase font-mono tracking-tight">
                 Alters database directly without MPC signing keys. Tests the hash integrity guard. Triggers emergency lockout on next query.
               </p>
             </div>
@@ -157,20 +157,20 @@ const HeistControl = () => {
 
       {/* Baseline Restore Controller */}
       <div className="p-5 border-t border-[#1f2937] bg-[#07090e] space-y-3">
-        <div className="flex items-center gap-1.5 text-[9px] font-mono text-slate-500 uppercase tracking-widest">
-          <ShieldCheck size={12} className="text-emerald-500" />
+        <div className="flex items-center gap-1.5 text-xs font-mono text-slate-500 uppercase tracking-widest">
+          <ShieldCheck size={14} className="text-emerald-500" />
           <span>Incident Remediation</span>
         </div>
         
         <button 
           onClick={handleReset}
           disabled={resetting}
-          className="w-full py-3 bg-[#0f131a] hover:bg-emerald-500/5 border border-[#1f2937] hover:border-emerald-500/30 text-emerald-400 text-xs font-black uppercase tracking-widest rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer disabled:opacity-40"
+          className="w-full py-3 bg-[#0f131a] hover:bg-emerald-500/5 border border-[#1f2937] hover:border-emerald-500/30 text-emerald-400 text-sm font-black uppercase tracking-widest rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer disabled:opacity-40"
         >
           {resetting ? (
-            <div className="w-3.5 h-3.5 rounded-full border-2 border-emerald-500/30 border-t-emerald-400 animate-spin" />
+            <div className="w-4 h-4 rounded-full border-2 border-emerald-500/30 border-t-emerald-400 animate-spin" />
           ) : (
-            <RotateCcw size={13} />
+            <RotateCcw size={14} />
           )}
           System Rollback Recovery
         </button>

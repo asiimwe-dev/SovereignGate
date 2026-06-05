@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useSystem } from '../context/SystemContext';
 
 export const useApi = () => {
-  const { API_BASE, fetchStatus, setSharesSubmitted } = useSystem();
+  const { API_BASE, fetchStatus, fetchBatches, setSharesSubmitted } = useSystem();
 
   const submitShare = async (batchId, adminId, shareValue, hardwareToken) => {
     try {
@@ -27,6 +27,7 @@ export const useApi = () => {
     try {
       const response = await axios.post(`${API_BASE}/simulator/inject`);
       await fetchStatus();
+      await fetchBatches();
       return response.data;
     } catch (error) {
       throw error.response?.data?.detail || "Injection failed";
@@ -38,6 +39,7 @@ export const useApi = () => {
       const response = await axios.post(`${API_BASE}/simulator/reset`);
       setSharesSubmitted([]); // Reset local UI state
       await fetchStatus();
+      await fetchBatches();
       return response.data;
     } catch (error) {
       throw error.response?.data?.detail || "System reset failed";

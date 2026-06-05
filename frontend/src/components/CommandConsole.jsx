@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 
 const CommandConsole = () => {
-  const { batch, selectedBatch, loading, sharesSubmitted, setSharesSubmitted } = useSystem();
+  const { batch, selectedBatch, loading, sharesSubmitted, setSharesSubmitted, fetchStatus, fetchBatches } = useSystem();
   const { submitShare } = useApi();
   const [submitting, setSubmitting] = useState(null);
   const [executing, setExecuting] = useState(false);
@@ -125,6 +125,10 @@ const CommandConsole = () => {
       setBackendSharesCount(0);
       setSharesSubmitted([]);
       
+      // Immediately refetch DB states to synchronize all components
+      await fetchStatus();
+      await fetchBatches();
+      
       setTimeout(() => setExecutionMessage(''), 5000);
     } catch (err) {
       console.error('Execution error:', err);
@@ -140,10 +144,10 @@ const CommandConsole = () => {
       <div className="flex flex-col items-center justify-center h-[50vh]">
         <div className="animate-pulse-gold">
           <div className="w-14 h-14 rounded-2xl bg-[#0f131a] border border-[#C5A059]/40 flex items-center justify-center mb-6 shadow-lg">
-            <Cpu className="text-[#C5A059] animate-spin" size={26} style={{ animationDuration: '6s' }} />
+            <Cpu className="text-[#C5A059] animate-spin" size={28} style={{ animationDuration: '6s' }} />
           </div>
         </div>
-        <p className="font-mono text-xs text-slate-400 uppercase tracking-[0.2em] font-bold">
+        <p className="font-mono text-sm text-slate-400 uppercase tracking-[0.2em] font-bold">
           Synchronizing Authorization Layer...
         </p>
       </div>
@@ -161,32 +165,32 @@ const CommandConsole = () => {
       <section className="institutional-card p-6 md:p-8 bg-[#0f131a] border-[#1f2937]">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-5 border-b border-[#1f2937]">
           <div>
-            <h2 className="institutional-header text-xl md:text-2xl font-black mb-1.5 flex items-center gap-2">
+            <h2 className="institutional-header text-2xl md:text-3xl font-black mb-1.5 flex items-center gap-2">
               <span className="text-[#C5A059]">◆</span> {currentBatch.funding_vote}
             </h2>
-            <p className="data-mono text-[10px] text-slate-500 uppercase tracking-widest">{currentBatch.batch_id}</p>
+            <p className="data-mono text-xs text-slate-500 uppercase tracking-widest">{currentBatch.batch_id}</p>
           </div>
           <StatusBadge status={currentBatch.status} />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="institutional-card p-4 bg-[#07090e] border-[#1f2937] hover:border-[#1f2937]">
-            <p className="text-[10px] text-slate-500 uppercase font-black mb-1.5 tracking-widest">Source Account</p>
-            <p className="data-mono text-xs text-slate-300 font-bold break-all">{currentBatch.source_account}</p>
+            <p className="text-xs text-slate-500 uppercase font-black mb-1.5 tracking-widest">Source Account</p>
+            <p className="data-mono text-sm text-slate-300 font-bold break-all">{currentBatch.source_account}</p>
           </div>
           <div className="institutional-card p-4 bg-[#07090e] border-[#1f2937] hover:border-[#1f2937]">
-            <p className="text-[10px] text-slate-500 uppercase font-black mb-1.5 tracking-widest">Authorized Payee</p>
-            <p className="text-xs font-black text-slate-200 uppercase tracking-tight truncate">{currentBatch.payload?.recipient}</p>
+            <p className="text-xs text-slate-500 uppercase font-black mb-1.5 tracking-widest">Authorized Payee</p>
+            <p className="text-sm font-black text-slate-200 uppercase tracking-tight truncate">{currentBatch.payload?.recipient}</p>
           </div>
           <div className="institutional-card p-4 bg-gradient-to-br from-[#07090e] to-[#0f131a] border-[#1f2937] hover:border-[#1f2937]">
-            <p className="text-[10px] text-[#C5A059] uppercase font-black mb-1 tracking-widest flex items-center gap-1.5">
-              <DollarSign size={12} /> Approved Amount
+            <p className="text-xs text-[#C5A059] uppercase font-black mb-1 tracking-widest flex items-center gap-1.5">
+              <DollarSign size={14} /> Approved Amount
             </p>
             <div className="flex items-baseline gap-1.5 mt-0.5">
-              <p className="text-2xl font-black text-[#C5A059] data-mono">
+              <p className="text-3xl font-black text-[#C5A059] data-mono">
                 {(currentBatch.payload?.amount || 0).toLocaleString()}
               </p>
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">UGX</span>
+              <span className="text-xs font-black text-slate-400 uppercase tracking-widest">UGX</span>
             </div>
           </div>
         </div>
@@ -196,12 +200,12 @@ const CommandConsole = () => {
       <section className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="institutional-header text-lg font-black flex items-center gap-2">
+            <h3 className="institutional-header text-xl font-black flex items-center gap-2">
               3-Key Authorization Chamber
             </h3>
-            <p className="text-[11px] text-slate-500 uppercase tracking-widest mt-0.5">Volatile memory signature accumulation</p>
+            <p className="text-xs text-slate-500 uppercase tracking-widest mt-0.5">Volatile memory signature accumulation</p>
           </div>
-          <div className="text-xs font-mono text-slate-300 uppercase tracking-widest px-3 py-1.5 bg-[#0f131a] rounded-lg border border-[#1f2937]">
+          <div className="text-sm font-mono text-slate-300 uppercase tracking-widest px-3 py-1.5 bg-[#0f131a] rounded-lg border border-[#1f2937]">
             Nodes: <span className="text-[#C5A059] font-black">{signatureCount}</span><span className="text-slate-500"> / 3</span>
           </div>
         </div>
@@ -228,22 +232,22 @@ const CommandConsole = () => {
                   {/* Authority Header */}
                   <div className="flex justify-between items-start gap-3">
                     <div className="flex-1">
-                      <p className="text-[10px] font-black text-[#C5A059] uppercase tracking-widest mb-0.5">Node {admin.id}</p>
-                      <h4 className="institutional-header text-sm font-black leading-snug tracking-tight text-slate-100">{admin.role}</h4>
-                      <p className="text-[10px] text-slate-500 font-mono uppercase tracking-wider mt-1">{admin.name}</p>
+                      <p className="text-xs font-black text-[#C5A059] uppercase tracking-widest mb-0.5">Node {admin.id}</p>
+                      <h4 className="institutional-header text-base font-black leading-snug tracking-tight text-slate-100">{admin.role}</h4>
+                      <p className="text-xs text-slate-500 font-mono uppercase tracking-wider mt-1">{admin.name}</p>
                     </div>
                     <div className={`p-2 rounded-lg transition-all flex-shrink-0 border ${
                       isSigned 
                         ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
                         : 'bg-[#07090e] text-slate-600 border-[#1f2937]'
                     }`}>
-                      <UserCheck size={18} />
+                      <UserCheck size={20} />
                     </div>
                   </div>
 
                   {/* Auth Share Entry */}
                   <div className="space-y-1.5">
-                    <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest block">
+                    <label className="text-xs font-black text-slate-500 uppercase tracking-widest block">
                       Cryptographic Share
                     </label>
                     <div className="relative">
@@ -252,12 +256,12 @@ const CommandConsole = () => {
                         value={adminShares[admin.id]}
                         onChange={(e) => handleShareChange(admin.id, e.target.value)}
                         disabled={isSigned || currentBatch.status === 'SETTLED' || currentBatch.status === 'CRITICAL_COMPROMISE'}
-                        className="w-full bg-[#07090e] border border-[#1f2937] rounded-lg px-3 py-2.5 text-xs font-mono text-slate-300 focus:outline-none focus:border-[#C5A059]/40 disabled:opacity-40 disabled:bg-[#07090e] transition-colors"
+                        className="w-full bg-[#07090e] border border-[#1f2937] rounded-lg px-3.5 py-3 text-sm font-mono text-slate-300 focus:outline-none focus:border-[#C5A059]/40 disabled:opacity-40 disabled:bg-[#07090e] transition-colors"
                         placeholder="••••••••••••••••"
                       />
                       {isSigned && (
                         <div className="absolute inset-0 bg-emerald-950/20 rounded-lg flex items-center justify-center border border-emerald-500/10">
-                          <span className="text-[10px] font-mono text-emerald-400 font-black tracking-[0.2em] uppercase">Committed</span>
+                          <span className="text-xs font-mono text-emerald-400 font-black tracking-[0.2em] uppercase">Committed</span>
                         </div>
                       )}
                     </div>
@@ -267,7 +271,7 @@ const CommandConsole = () => {
                   <button
                     onClick={() => handleSign(admin)}
                     disabled={isProcessing || isSigned || currentBatch.status === 'SETTLED' || currentBatch.status === 'CRITICAL_COMPROMISE'}
-                    className={`w-full py-2.5 rounded-lg font-black text-[10px] uppercase tracking-[0.15em] flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer ${
+                    className={`w-full py-3 rounded-lg font-black text-xs uppercase tracking-[0.15em] flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer ${
                       isSigned 
                         ? 'bg-emerald-500/5 text-emerald-400 border border-emerald-500/20 cursor-not-allowed' 
                         : 'bg-[#07090e] border border-[#1f2937] text-slate-400 hover:border-[#C5A059]/50 hover:text-[#C5A059] hover:bg-[#0f131a]'
@@ -275,17 +279,17 @@ const CommandConsole = () => {
                   >
                     {isProcessing ? (
                       <>
-                        <div className="w-3 h-3 rounded-full border-2 border-[#C5A059]/30 border-t-[#C5A059] animate-spin" />
+                        <div className="w-4 h-4 rounded-full border-2 border-[#C5A059]/30 border-t-[#C5A059] animate-spin" />
                         Encrypting...
                       </>
                     ) : isSigned ? (
                       <>
-                        <CheckCircle2 size={14} />
+                        <CheckCircle2 size={16} />
                         Authorized
                       </>
                     ) : (
                       <>
-                        <LockKeyhole size={14} />
+                        <LockKeyhole size={16} />
                         Commit Share
                       </>
                     )}
@@ -308,13 +312,13 @@ const CommandConsole = () => {
           }`}>
             <div className="mt-0.5">
               {executionMessage.includes('INSUFFICIENT') || executionMessage.includes('ERROR') ? (
-                <AlertCircle size={18} />
+                <AlertCircle size={20} />
               ) : (
-                <CheckCircle2 size={18} />
+                <CheckCircle2 size={20} />
               )}
             </div>
             <div className="flex-1">
-              <p className="text-xs font-mono uppercase tracking-tight font-bold">{executionMessage}</p>
+              <p className="text-sm font-mono uppercase tracking-tight font-bold">{executionMessage}</p>
             </div>
           </div>
         )}
@@ -327,7 +331,7 @@ const CommandConsole = () => {
           <button
             onClick={handleExecuteClearing}
             disabled={isSettled || currentBatch.status === 'CRITICAL_COMPROMISE' || !thresholdReady || executing}
-            className={`w-full py-4 rounded-xl font-black text-sm uppercase tracking-[0.2em] relative transition-all active:scale-[0.99] cursor-pointer flex items-center justify-center gap-2 ${
+            className={`w-full py-4 rounded-xl font-black text-base uppercase tracking-[0.2em] relative transition-all active:scale-[0.99] cursor-pointer flex items-center justify-center gap-2 ${
               isSettled || currentBatch.status === 'CRITICAL_COMPROMISE' || !thresholdReady || executing
                 ? 'bg-slate-900 text-slate-600 border border-[#1f2937] cursor-not-allowed'
                 : 'bg-gradient-to-r from-[#C5A059] to-[#D4B873] text-black border border-[#C5A059] hover:shadow-[0_0_20px_rgba(197,160,89,0.25)] font-bold'
@@ -335,20 +339,20 @@ const CommandConsole = () => {
           >
             {executing ? (
               <>
-                <div className="inline-block w-4 h-4 rounded-full border-2 border-black/35 border-t-black animate-spin" />
+                <div className="inline-block w-5 h-5 rounded-full border-2 border-black/35 border-t-black animate-spin" />
                 Executing Settlement Clearing...
               </>
             ) : isSettled ? (
               <>
-                <CheckCircle2 size={16} /> Transaction Settled & Disbursed
+                <CheckCircle2 size={18} /> Transaction Settled & Disbursed
               </>
             ) : !thresholdReady ? (
               <>
-                <Lock size={16} /> Awaiting Quorum ({signatureCount} of 2 Shares committed)
+                <Lock size={18} /> Awaiting Quorum ({signatureCount} of 2 Shares committed)
               </>
             ) : (
               <>
-                Execute Settlement Clearing <ArrowRight size={16} />
+                Execute Settlement Clearing <ArrowRight size={18} />
               </>
             )}
           </button>
@@ -360,18 +364,18 @@ const CommandConsole = () => {
         <div className="institutional-card system-success p-6 border-l-4 border-emerald-500 animate-in zoom-in-95 duration-500 bg-emerald-950/5">
           <div className="flex items-start gap-4">
             <div className="p-2.5 bg-emerald-500/10 rounded-xl border border-emerald-500/20 text-emerald-400">
-              <CheckCircle2 size={24} />
+              <CheckCircle2 size={26} />
             </div>
             <div className="flex-1 space-y-2">
-              <h4 className="font-black text-sm text-emerald-400 uppercase tracking-wide">
+              <h4 className="font-black text-base text-emerald-400 uppercase tracking-wide">
                 Transaction Authenticated & Settled
               </h4>
-              <p className="text-xs text-slate-300 leading-relaxed">
+              <p className="text-sm text-slate-300 leading-relaxed">
                 2-of-3 Quorum verified via threshold secret reconstruction in volatile memory. Reconstructed credentials have been purged. Funds disbursed to beneficiary via RTGS clearing protocol.
               </p>
               <div className="space-y-1">
-                <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest block">Combined Vault Signature</span>
-                <p className="data-mono text-[10px] text-emerald-400 bg-black/60 p-3 rounded-lg border border-emerald-500/10 break-all leading-tight">
+                <span className="text-xs font-black text-slate-500 uppercase tracking-widest block">Combined Vault Signature</span>
+                <p className="data-mono text-xs text-emerald-400 bg-black/60 p-3.5 rounded-lg border border-emerald-500/10 break-all leading-relaxed">
                   {currentBatch.combined_signature || "AUTHENTICATION_HASH_LEDGER_CONFIRMATION"}
                 </p>
               </div>

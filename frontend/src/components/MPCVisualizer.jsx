@@ -41,18 +41,18 @@ const MPCVisualizer = () => {
               isSettled ? 'bg-emerald-500/10 text-emerald-400' : 
               'bg-[#c5a059]/10 text-[#c5a059]'
             }`}>
-              {isCompromised ? <ShieldAlert size={16} className="animate-bounce" /> : <Shield size={16} />}
+              {isCompromised ? <ShieldAlert size={18} className="animate-bounce" /> : <Shield size={18} />}
             </div>
             <div>
-              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+              <h4 className="text-xs font-black uppercase tracking-[0.2em] text-slate-300">
                 Multi-Party Computation (MPC) Graph
               </h4>
-              <p className="text-[9px] text-slate-500 font-mono tracking-tight mt-0.5">
+              <p className="text-[11px] text-slate-500 font-mono tracking-tight mt-0.5">
                 Shamir's Secret Sharing (2-of-3 Quorum)
               </p>
             </div>
           </div>
-          <span className={`font-mono text-[9px] px-2.5 py-1 rounded-full uppercase font-black border ${
+          <span className={`font-mono text-xs px-3 py-1 rounded-full uppercase font-black border ${
             isCompromised ? 'bg-red-950/20 text-red-500 border-red-900/30' :
             isSettled ? 'bg-emerald-950/20 text-emerald-400 border-emerald-900/30' :
             isQuorumMet ? 'bg-amber-950/20 text-[#c5a059] border-[#c5a059]/30 animate-pulse-gold' :
@@ -114,23 +114,23 @@ const MPCVisualizer = () => {
               {authorities.map((auth) => {
                 const isSigned = activeShares.includes(auth.id);
                 return (
-                  <div key={auth.id} className="flex items-center gap-2">
+                  <div key={auth.id} className="flex items-center gap-2.5">
                     <div 
-                      className={`w-11 h-11 rounded-xl border flex flex-col items-center justify-center cursor-default shadow-md ${
+                      className={`w-12 h-12 rounded-xl border flex flex-col items-center justify-center cursor-default shadow-md ${
                         isCompromised ? 'border-red-900 bg-red-950/20 text-red-500 animate-shake-extreme' :
                         isSigned ? 'border-[#c5a059] bg-[#c5a059]/10 text-[#c5a059] shadow-[#c5a059]/10' :
                         'border-[#1f2937] bg-slate-900/60 text-slate-500 hover:border-slate-800'
                       }`}
                       title={auth.label}
                     >
-                      <Cpu size={16} className={isSigned && !isCompromised ? "animate-pulse" : ""} />
-                      <span className="text-[7px] font-black uppercase font-mono tracking-tighter mt-0.5">{auth.short}</span>
+                      <Cpu size={18} className={isSigned && !isCompromised ? "animate-pulse" : ""} />
+                      <span className="text-[9px] font-black uppercase font-mono tracking-tighter mt-0.5">{auth.short}</span>
                     </div>
                     <div>
-                      <p className={`text-[9px] font-black uppercase leading-tight ${isSigned ? 'text-slate-200' : 'text-slate-500'}`}>
+                      <p className={`text-xs font-black uppercase leading-tight ${isSigned ? 'text-slate-200' : 'text-slate-500'}`}>
                         Node {auth.id}
                       </p>
-                      <p className="text-[7px] text-slate-500 font-mono leading-none mt-0.5">
+                      <p className="text-[10px] text-slate-500 font-mono leading-none mt-0.5">
                         {isSigned ? "COMMITTED" : "AWAITING"}
                       </p>
                     </div>
@@ -142,7 +142,7 @@ const MPCVisualizer = () => {
             {/* Right Column: Central Clearing Gate Vault */}
             <div className="flex flex-col items-center justify-center mr-8">
               <div 
-                className={`w-18 h-18 rounded-2xl border-2 flex flex-col items-center justify-center p-3 relative ${
+                className={`w-20 h-20 rounded-2xl border-2 flex flex-col items-center justify-center p-3 relative ${
                   isCompromised ? 'border-red-600 bg-red-950/30 text-red-500 animate-pulse' :
                   isSettled ? 'border-emerald-500 bg-emerald-950/30 text-emerald-400 shadow-[0_0_25px_rgba(16,185,129,0.25)]' :
                   isQuorumMet ? 'border-[#c5a059] bg-[#c5a059]/10 text-[#c5a059] shadow-[0_0_20px_rgba(197,160,89,0.2)]' :
@@ -154,20 +154,20 @@ const MPCVisualizer = () => {
                   <span className="absolute inset-0 rounded-2xl border border-[#c5a059] animate-ping opacity-25"></span>
                 )}
                 
-                {isCompromised ? <ShieldAlert size={28} className="animate-bounce" /> :
-                 isSettled ? <CheckCircle2 size={28} /> :
-                 isQuorumMet ? <Unlock size={26} className="text-[#c5a059]" /> :
-                 <Lock size={24} />}
+                {isCompromised ? <ShieldAlert size={32} className="animate-bounce" /> :
+                 isSettled ? <CheckCircle2 size={32} /> :
+                 isQuorumMet ? <Unlock size={30} className="text-[#c5a059]" /> :
+                 <Lock size={28} />}
                 
-                <span className="text-[7px] font-black font-mono tracking-widest uppercase mt-1 text-center leading-none">
+                <span className="text-[9px] font-black font-mono tracking-widest uppercase mt-1 text-center leading-none">
                   {isCompromised ? "BLOCKED" : isSettled ? "SETTLED" : "VAULT"}
                 </span>
               </div>
-              <div className="mt-2 text-center">
-                <p className="text-[9px] font-black uppercase tracking-wider text-slate-300">
+              <div className="mt-2.5 text-center">
+                <p className="text-xs font-black uppercase tracking-wider text-slate-300">
                   {isCompromised ? "隔離プロトコル" : "RTGS Clearing Gate"}
                 </p>
-                <p className="text-[7px] text-slate-500 font-mono mt-0.5">
+                <p className="text-[10px] text-slate-500 font-mono mt-0.5">
                   {isCompromised ? "CRITICAL LOCKOUT" : 
                    isSettled ? "SETTLEMENT COMPLETE" :
                    isQuorumMet ? "AUTH READY" : "LOCKED"}
