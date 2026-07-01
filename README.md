@@ -48,3 +48,4 @@ For detailed technical information, please refer to the following:
 
 ## ⚖️ License
 Proprietary - Internal Treasury Use Only.
+Licensed by [MIT LICENSE](./LICENSE)
