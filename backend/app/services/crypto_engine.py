@@ -1,5 +1,6 @@
 import logging
 import random
+from typing import List, Tuple
 
 from ..config import SECP256K1_ORDER
 
