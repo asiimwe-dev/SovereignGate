@@ -10,15 +10,17 @@ INITIAL_PAYLOAD = {
     "amount": 10000000000,
     "currency": "UGX",
     "recipient": "World Bank (IDA)",
-    "description": "Debt Servicing - Principal Repayment FY25/26"
+    "description": "Debt Servicing - Principal Repayment FY25/26",
 }
 
 # The expected hash of the initial payload JSON string
-import json
 import hashlib
+import json
+
 
 def calculate_hash(payload_dict):
     payload_str = json.dumps(payload_dict, sort_keys=True)
     return hashlib.sha256(payload_str.encode()).hexdigest()
+
 
 EXPECTED_HASH = calculate_hash(INITIAL_PAYLOAD)
