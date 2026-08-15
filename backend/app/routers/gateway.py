@@ -1,14 +1,17 @@
-from fastapi import APIRouter, HTTPException
-from ..database import get_db_connection
-from ..config import EXPECTED_HASH, calculate_hash
-from ..models import PaymentBatchResponse
-from ..services.memory_buffer import MemoryBuffer
 import json
 import logging
+
+from fastapi import APIRouter, HTTPException
+
+from ..config import EXPECTED_HASH, calculate_hash
+from ..database import get_db_connection
+from ..models import PaymentBatchResponse
+from ..services.memory_buffer import MemoryBuffer
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/gate", tags=["gate"])
+
 
 @router.get("/batches")
 async def list_all_batches():
@@ -18,7 +21,9 @@ async def list_all_batches():
     """
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT batch_id, funding_vote, source_account, payload_json, status FROM payment_batches ORDER BY batch_id DESC")
+    cursor.execute(
+        "SELECT batch_id, funding_vote, source_account, payload_json, status FROM payment_batches ORDER BY batch_id DESC"
+    )
     rows = cursor.fetchall()
     conn.close()
 
@@ -27,13 +32,15 @@ async def list_all_batches():
         row_dict = dict(row)
         try:
             payload = json.loads(row_dict["payload_json"])
-            batches.append({
-                "batch_id": row_dict["batch_id"],
-                "funding_vote": row_dict["funding_vote"],
-                "source_account": row_dict["source_account"],
-                "payload": payload,
-                "status": row_dict["status"]
-            })
+            batches.append(
+                {
+                    "batch_id": row_dict["batch_id"],
+                    "funding_vote": row_dict["funding_vote"],
+                    "source_account": row_dict["source_account"],
+                    "payload": payload,
+                    "status": row_dict["status"],
+                }
+            )
         except json.JSONDecodeError:
             logger.warning(f"Failed to parse payload for batch {row_dict['batch_id']}")
             continue
@@ -45,18 +52,18 @@ async def list_all_batches():
 async def get_current_batch():
     """
     Retrieve current payment batch with MANDATORY integrity verification.
-    
+
     SECURITY FIX #1: OUT-OF-BAND BYPASS PREVENTION
-    
+
     The integrity check is ALWAYS performed, regardless of status.
     This prevents attackers from bypassing verification by pre-setting status to SETTLED.
-    
+
     Attack Vector (Previously Vulnerable):
     1. Attacker mutates payload_json in database
     2. Attacker sets status = "SETTLED"
     3. Old code: if (hash != expected AND status != SETTLED) → condition FALSE → no alert
     4. Compromised payload returned to frontend as legitimate ✗
-    
+
     New Code:
     - ALWAYS calculate hash
     - ALWAYS compare against EXPECTED_HASH
@@ -75,11 +82,11 @@ async def get_current_batch():
     batch_data = dict(row)
     payload_json = batch_data["payload_json"]
     current_payload = json.loads(payload_json)
-    
+
     # MANDATORY Integrity Check - ALWAYS performed (FIX #1)
     current_hash = calculate_hash(current_payload)
     status = batch_data["status"]
-    
+
     # Security Invariant: If hash doesn't match, system is compromised
     # This check is NOT conditional on status - it ALWAYS runs
     if current_hash != EXPECTED_HASH:
@@ -89,23 +96,23 @@ async def get_current_batch():
             f"Expected: {EXPECTED_HASH}, Got: {current_hash}. "
             f"Previous Status: {status}. Setting to CRITICAL_COMPROMISE."
         )
-        
+
         status = "CRITICAL_COMPROMISE"
-        
+
         # Update database with compromise state
         conn = get_db_connection()
         try:
             conn.execute(
                 "UPDATE payment_batches SET status = ? WHERE batch_id = ?",
-                (status, batch_data["batch_id"])
+                (status, batch_data["batch_id"]),
             )
             conn.commit()
         finally:
             conn.close()
-        
+
         # Purge all volatile shares for this batch immediately (defense-in-depth)
         MemoryBuffer.clear_batch(batch_data["batch_id"])
-        
+
         logger.info(f"Compromise remediation complete: batch purged, shares cleared")
 
     return PaymentBatchResponse(
@@ -115,6 +122,5 @@ async def get_current_batch():
         payload=current_payload,
         status=status,
         combined_signature=batch_data["combined_signature"],
-        rejection_reason=batch_data["rejection_reason"]
+        rejection_reason=batch_data["rejection_reason"],
     )
-

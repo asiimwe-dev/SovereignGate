@@ -1,6 +1,5 @@
 import logging
 import random
-from typing import List, Tuple
 
 from ..config import SECP256K1_ORDER
 
@@ -29,7 +28,7 @@ class CryptoEngine:
             raise ValueError(f"Modular inverse does not exist for a={a} mod {m}")
 
     @staticmethod
-    def split_secret(secret: int, k: int, n: int) -> List[Tuple[int, int]]:
+    def split_secret(secret: int, k: int, n: int) -> list[tuple[int, int]]:
         """
         Split a secret using Shamir Secret Sharing (k-of-n threshold scheme).
 
@@ -61,7 +60,7 @@ class CryptoEngine:
         return shares
 
     @staticmethod
-    def reconstruct_secret(shares: List[Tuple[int, int]]) -> int:
+    def reconstruct_secret(shares: list[tuple[int, int]]) -> int:
         """
         Reconstruct the master secret using Lagrange interpolation over the SECP256K1 field.
 
